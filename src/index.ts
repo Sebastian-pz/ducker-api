@@ -1,8 +1,12 @@
 import express from 'express';
 
-const app = express();
+import exampleRoutes from './routes/example';
 
+const app = express();
 app.use(express.json());
+
+// Routes section
+app.use('/api/example', exampleRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {
