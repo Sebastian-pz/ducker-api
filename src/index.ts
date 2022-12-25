@@ -8,7 +8,10 @@ app.use(express.json());
 // Routes section
 app.use('/api/example', exampleRoutes);
 
-const PORT = 3000;
+//Start server
+const PORT = 3001;
 app.listen(PORT, () => {
-  console.log(`Server listening on port: ${PORT}`);
+  console.log(
+    `🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄\nServer listening on port: ${PORT}\n🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄`
+  );
 });
