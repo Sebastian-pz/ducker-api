@@ -1,6 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { validarCampos } from '../middlewares/validateField';
+import { validateFields } from '../middlewares/validateField';
 import { existEmail, existNickName, existUser } from '../middlewares/dbMiddlewares';
 import { userPost, usersGet, userID, usersPut, userDelete } from '../controllers/userController';
 //import * as exampleServices from '../services/example';
@@ -15,7 +15,7 @@ router.get(
 		check('id', 'Invalid ID').isMongoId(),
 		check('id').custom(existUser),
 		check('role', 'This role is not allowed ').isIn(['ADMIN_ROLE', 'USER_ROLE']),
-		validarCampos,
+		validateFields,
 	],
 	userID
 );
@@ -32,20 +32,20 @@ router.post(
 			min: 6,
 		}),
 		check('role', 'This role is not allowed ').isIn(['ADMIN_ROLE', 'USER_ROLE']),
-		validarCampos,
+		validateFields,
 	],
 	userPost
 );
 
 router.put(
 	'/:id',
-	[check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser), validarCampos],
+	[check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser), validateFields],
 	usersPut
 );
 
 router.delete(
 	'/:id',
-	[check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser), validarCampos],
+	[check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser), validateFields],
 	userDelete
 );
 
