@@ -1,5 +1,6 @@
 import express from 'express';
 import dbConnection from '../database/config';
+import router from '../routes/user';
 
 class Server {
 	port: string | undefined;
@@ -23,7 +24,7 @@ class Server {
 		this.middlewares();
 
 		//rutas
-		//this.routes();
+		this.routes();
 	}
 
 	conectarDB = async () => {
@@ -34,11 +35,11 @@ class Server {
 		this.app.use(express.json());
 	}
 
-	// routes() {
-	// 	this.app.use(this.paths.auth, require('../routes/auth'));
-	// 	this.app.use(this.paths.users, require('../routes/user'));
-	// 	this.app.use(this.paths.cuack, require('../routes/cuack'));
-	// }
+	routes() {
+		// 	this.app.use(this.paths.auth, require('../routes/auth'));
+		this.app.use(this.paths.users, router);
+		// 	this.app.use(this.paths.cuack, require('../routes/cuack'));
+	}
 
 	listen() {
 		this.app.listen(this.port, () => {
