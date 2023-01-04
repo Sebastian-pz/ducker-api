@@ -1,6 +1,7 @@
 import express from 'express';
 import dbConnection from '../database/config';
-import router from '../routes/user';
+import routerUsers from '../routes/user';
+import routerAuth from '../routes/auth';
 
 class Server {
 	port: string | undefined;
@@ -33,11 +34,14 @@ class Server {
 
 	middlewares() {
 		this.app.use(express.json());
+
+		//directorio publico
+		this.app.use(express.static('public'));
 	}
 
 	routes() {
-		// 	this.app.use(this.paths.auth, require('../routes/auth'));
-		this.app.use(this.paths.users, router);
+		this.app.use(this.paths.auth, routerAuth);
+		this.app.use(this.paths.users, routerUsers);
 		// 	this.app.use(this.paths.cuack, require('../routes/cuack'));
 	}
 
