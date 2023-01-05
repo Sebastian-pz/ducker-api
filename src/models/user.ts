@@ -79,7 +79,7 @@ const userSchema = new Schema({
 		},
 	],
 
-	recuaks: [
+	recuacks: [
 		{
 			id: { type: String },
 		},
@@ -115,17 +115,26 @@ const userSchema = new Schema({
 		},
 	],
 
-	cuaks: [
+	cuacks: [
 		{
 			author: { type: String, trim: true },
 			content: { type: String, trim: true },
 			likes: [{ type: String }],
-			recuaks: [{ type: String }],
+			recuacks: [{ type: String }],
 			date: { type: Date, default: Date.now },
 			reports: { type: Number },
-			comments: [{ type: String }],
+			comments: [
+				{
+					author: { type: String, trim: true },
+					content: { type: String, trim: true },
+					likes: [{ type: String }],
+					recuacks: [{ type: String }],
+					date: { type: Date, default: Date.now },
+					reports: { type: Number },
+				},
+			],
 			category: { type: String },
-			isPublic: { type: Boolean },
+			isPublic: { type: Boolean, default: true },
 		},
 	],
 
@@ -135,6 +144,13 @@ const userSchema = new Schema({
 			content: { type: String, default: '' },
 			message: { type: String, require: true, default: '' },
 			img: { type: String },
+		},
+	],
+
+	responses: [
+		{
+			originalID: { type: String, required: true },
+			commentID: { type: String, required: true },
 		},
 	],
 });
