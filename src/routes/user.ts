@@ -4,6 +4,7 @@ import { validateFields } from '../middlewares/validateField';
 import { existEmail, existNickName, existUser } from '../middlewares/dbMiddlewares';
 import { userPost, usersGet, userID, usersPut, userDelete } from '../controllers/userController';
 //import * as exampleServices from '../services/example';
+import { validateJWT } from '../middlewares/validateJWT';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.get(
 router.post(
 	'/',
 	[
+		validateJWT,
 		check('email', 'Invalid email :D').isEmail(),
 		check('email').custom(existEmail),
 		check('fullname', 'Full name is required').not().isEmpty(),
@@ -39,7 +41,12 @@ router.post(
 
 router.put(
 	'/:id',
-	[check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser), validateFields],
+	[
+		validateJWT,
+		check('id', 'Invalid ID').isMongoId(),
+		check('id').custom(existUser),
+		validateFields,
+	],
 	usersPut
 );
 
