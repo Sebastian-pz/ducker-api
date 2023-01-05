@@ -2,6 +2,7 @@ import express from 'express';
 import dbConnection from '../database/config';
 import routerUsers from '../routes/user';
 import routerAuth from '../routes/auth';
+import routerCuack from '../routes/cuacks';
 
 class Server {
 	port: string | undefined;
@@ -42,7 +43,7 @@ class Server {
 	routes() {
 		this.app.use(this.paths.auth, routerAuth);
 		this.app.use(this.paths.users, routerUsers);
-		// 	this.app.use(this.paths.cuack, require('../routes/cuack'));
+		this.app.use(this.paths.cuack, routerCuack);
 	}
 
 	listen() {

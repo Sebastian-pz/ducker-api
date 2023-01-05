@@ -21,7 +21,7 @@ export const usersGet = async (req: Request, res: Response) => {
 
 export const userPost = async (req: Request, res: Response) => {
 	const { fullname, email, password, role, nickname } = req.body;
-	const nicknameL = nickname.toLowerCase();
+	const nicknameL = `@${nickname.toLowerCase()}`;
 	const user = new User({ fullname, email, password, role, nickname: nicknameL });
 
 	//Encrypt the password

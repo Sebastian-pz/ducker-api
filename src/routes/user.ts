@@ -24,7 +24,6 @@ router.get(
 router.post(
 	'/',
 	[
-		validateJWT,
 		check('email', 'Invalid email :D').isEmail(),
 		check('email').custom(existEmail),
 		check('fullname', 'Full name is required').not().isEmpty(),
