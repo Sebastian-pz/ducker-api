@@ -1,7 +1,5 @@
 import express from 'express';
-//import { check } from 'express-validator';
-//import { validateFields } from '../middlewares/validateField';
-import { cuackPost, cuackPut } from '../controllers/cuackController';
+import { cuackPost, cuackPut } from '../controllers/cuacks';
 import { validateJWT } from '../middlewares/validateJWT';
 
 const router = express.Router();
