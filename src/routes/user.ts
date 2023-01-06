@@ -21,10 +21,6 @@ router.get(
   [
     check('id', 'Invalid ID').isMongoId(),
     check('id').custom(existUser),
-    check('role', 'This role is not allowed ').isIn([
-      'ADMIN_ROLE',
-      'USER_ROLE',
-    ]),
     validateFields,
   ],
   userID
@@ -44,10 +40,6 @@ router.post(
     ).isLength({
       min: 6,
     }),
-    check('role', 'This role is not allowed ').isIn([
-      'ADMIN_ROLE',
-      'USER_ROLE',
-    ]),
     validateFields,
   ],
   userPost

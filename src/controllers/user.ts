@@ -19,13 +19,12 @@ export const usersGet = async (req: Request, res: Response) => {
 };
 
 export const userPost = async (req: Request, res: Response) => {
-  const { fullname, email, password, role, nickname } = req.body;
+  const { fullname, email, password, nickname } = req.body;
   const nicknameL = `@${nickname.toLowerCase()}`;
   const user = new User({
     fullname,
     email,
     password,
-    role,
     nickname: nicknameL,
   });
 
@@ -46,6 +45,8 @@ export const userID = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const user = await User.findById(id);
+
+    if (!user) return res.status(404).send({ msg: 'User not found' });
     return res.status(201).send(user);
   } catch (error) {
     console.log(error);
