@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 
 const dbConnection = async () => {
-	try {
-		mongoose.set('strictQuery', true);
-		mongoose.connect(process.env.MONGO_CNN ? process.env.MONGO_CNN : 'No uri');
-
-		console.log('Base de datos arriba!!!');
-	} catch (error) {
-		console.log(error);
-		throw new Error('Error en la base de datos');
-	}
+  try {
+    mongoose.set('strictQuery', true);
+    await mongoose.connect(
+      process.env.MONGO_CNN ? process.env.MONGO_CNN : 'No uri'
+    );
+    console.log('Database working good! 🎈');
+  } catch (error) {
+    console.log(`Error starting the database: ${error}`);
+  }
 };
 
 export default dbConnection;

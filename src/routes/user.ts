@@ -1,11 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validateField';
-import {
-  existEmail,
-  existNickName,
-  existUser,
-} from '../middlewares/dbMiddlewares';
+import { existEmail, existNickname, existUser } from '../middlewares/db';
 import {
   userPost,
   usersGet,
@@ -13,7 +9,7 @@ import {
   usersPut,
   userDelete,
 } from '../controllers/user';
-//import * as exampleServices from '../services/example';
+
 import { validateJWT } from '../middlewares/validateJWT';
 
 const router = express.Router();
@@ -41,7 +37,7 @@ router.post(
     check('email').custom(existEmail),
     check('fullname', 'Full name is required').not().isEmpty(),
     check('nickname', 'Nick name is required').not().isEmpty(),
-    check('nickname').custom(existNickName),
+    check('nickname').custom(existNickname),
     check(
       'password',
       'password is required and its length needs to be more than 6'
