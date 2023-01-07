@@ -8,7 +8,7 @@ export const existEmail = async (email: string = '') => {
 };
 
 export const existNickname = async (nickname: string = '') => {
-  const user = await User.findOne({ nickname });
+  const user = await User.findOne({ nickname: `@${nickname}` });
   if (user) {
     throw new Error(`${nickname} already exists.`);
   }
