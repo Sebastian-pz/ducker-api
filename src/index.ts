@@ -1,17 +1,8 @@
-import express from 'express';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-import exampleRoutes from './routes/example';
+import Server from './models/server';
 
-const app = express();
-app.use(express.json());
+const server = new Server();
 
-// Routes section
-app.use('/api/example', exampleRoutes);
-
-//Start server
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(
-    `🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄\nServer listening on port: ${PORT}\n🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄🎄`
-  );
-});
+server.listen();

@@ -1,31 +1,40 @@
 {
-  "name": "ducker-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "tsc": "tsc",
-    "start": "tsc node build/index.js",
-    "dev": "ts-node-dev src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Sebastian-pz/ducker-api.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Sebastian-pz/ducker-api/issues"
-  },
-  "homepage": "https://github.com/Sebastian-pz/ducker-api#readme",
-  "devDependencies": {
-    "@types/express": "^4.17.15",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^4.9.4"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+	"name": "ducker-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"tsc": "tsc",
+		"start": "tsc node build/index.js",
+		"dev": "ts-node-dev src/index.ts",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Sebastian-pz/ducker-api.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Sebastian-pz/ducker-api/issues"
+	},
+	"homepage": "https://github.com/Sebastian-pz/ducker-api#readme",
+	"devDependencies": {
+		"@types/bcrypt": "^5.0.0",
+		"@types/express": "^4.17.15",
+		"@types/jsonwebtoken": "^9.0.0",
+		"dotenv": "^16.0.3",
+		"ts-node-dev": "^2.0.0",
+		"typescript": "^4.9.4"
+	},
+	"dependencies": {
+		"bcrypt": "^5.1.0",
+		"cors": "^2.8.5",
+		"express": "^4.18.2",
+		"express-validator": "^6.14.2",
+		"google-auth-library": "^8.7.0",
+		"jsonwebtoken": "^9.0.0",
+		"mongoose": "^6.8.2"
+	}
 }
