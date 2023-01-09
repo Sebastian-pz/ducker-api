@@ -1,6 +1,10 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { validateFields } from '../middlewares/validateField';
+import {
+  validateFields,
+  validateNickname,
+  validatePassword,
+} from '../middlewares/validateField';
 import { existEmail, existNickname, existUser } from '../middlewares/db';
 import {
   userPost,
@@ -41,6 +45,8 @@ router.post(
       min: 6,
     }),
     validateFields,
+    validatePassword,
+    validateNickname,
   ],
   userPost
 );

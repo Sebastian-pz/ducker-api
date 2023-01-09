@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import { Response, Request, NextFunction } from 'express';
+import { noBanWords, noSpecialCharacters } from './utils/fields';
 
 export const validateFields = (
   req: Request,
@@ -12,4 +13,56 @@ export const validateFields = (
   }
 
   return next();
+};
+
+export const validatePassword = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { password } = req.body;
+  if (!password) return res.status(400).send({ error: 'Missing password' });
+  if (noSpecialCharacters(password)) return next();
+
+  return res.status(400).send({
+    errors: [
+      {
+        value: password,
+        msg: `password ${password} is not valid`,
+        param: 'password',
+        location: 'body',
+      },
+    ],
+  });
+};
+
+export const validateNickname = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { nickname } = req.body;
+
+  if (noSpecialCharacters(nickname) && noBanWords(nickname)) return next();
+
+  const errors = [];
+  if (!noSpecialCharacters(nickname)) {
+    errors.push({
+      value: nickname,
+      msg: `nickname ${nickname} contains special characters`,
+      param: 'nickname',
+      location: 'body',
+    });
+  }
+
+  if (!noBanWords(nickname)) {
+    errors.push({
+      value: nickname,
+      msg: `nickname ${nickname} contains ban words`,
+      param: 'nickname',
+      location: 'body',
+    });
+  }
+
+  return res.status(400).send({ errors });
 };
