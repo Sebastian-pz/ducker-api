@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/user';
+import { noSpecialCharacters } from '../middlewares/utils/fields';
 
 export const usersGet = async (req: Request, res: Response) => {
   const { since = 0, from = 10 } = req.query;
@@ -61,6 +62,11 @@ export const usersPut = async (req: Request, res: Response) => {
   //Validate database
   if (rest.password) {
     //Crypt password
+    if (!noSpecialCharacters(rest.password))
+      return res.status(400).send({
+        response: false,
+        msg: `password ${rest.password} has special characters`,
+      });
     const salt = bcrypt.genSaltSync();
     rest.password = bcrypt.hashSync(rest.password, salt);
   }

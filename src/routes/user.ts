@@ -8,6 +8,7 @@ import {
   existEmail,
   existNickname,
   existUser,
+  compareJwtInfoAndParamID
 } from '../middlewares';
 
 import {
@@ -59,6 +60,7 @@ router.put(
     validateJWT,
     check('id', 'Invalid ID').isMongoId(),
     check('id').custom(existUser),
+    compareJwtInfoAndParamID,
     validateFields,
   ],
   usersPut
@@ -67,8 +69,10 @@ router.put(
 router.delete(
   '/:id',
   [
+    validateJWT,
     check('id', 'Invalid ID').isMongoId(),
     check('id').custom(existUser),
+    compareJwtInfoAndParamID,
     validateFields,
   ],
   userDelete

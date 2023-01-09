@@ -6,7 +6,7 @@ import {
   cuacksByUser,
   cuackDelete,
 } from '../controllers';
-import { validateJWT } from '../middlewares';
+import { validateJWT, compareJwtInfoAndParamID } from '../middlewares';
 import { check } from 'express-validator';
 
 const router = express.Router();
@@ -19,13 +19,21 @@ router.post('/', [validateJWT], cuackPost);
 
 router.put(
   '/:id',
-  [validateJWT, check('id', 'Invalid ID').isMongoId()],
+  [
+    validateJWT,
+    check('id', 'Invalid ID').isMongoId(),
+    compareJwtInfoAndParamID,
+  ],
   cuackPut
 );
 
 router.put(
   '/d/:id',
-  [validateJWT, check('id', 'Invalid ID').isMongoId()],
+  [
+    validateJWT,
+    check('id', 'Invalid ID').isMongoId(),
+    compareJwtInfoAndParamID,
+  ],
   cuackDelete
 );
 
