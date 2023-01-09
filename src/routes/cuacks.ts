@@ -1,6 +1,15 @@
 import express from 'express';
-import { cuackPost, cuackPut, cuacksByID, cuacksByUser, cuackDelete } from '../controllers/cuacks';
-import { validateJWT } from '../middlewares/validateJWT';
+import {
+  cuackPost,
+  cuackPut,
+  cuacksByID,
+  cuacksByUser,
+  cuackDelete,
+} from '../controllers/cuacks';
+import {
+  compareJwtInfoAndParamID,
+  validateJWT,
+} from '../middlewares/validateJWT';
 import { check } from 'express-validator';
 
 const router = express.Router();
@@ -11,8 +20,24 @@ router.get('/c/:id', [check('id', 'Invalid ID').isMongoId()], cuacksByID);
 
 router.post('/', [validateJWT], cuackPost);
 
-router.put('/:id', [validateJWT, check('id', 'Invalid ID').isMongoId()], cuackPut);
+router.put(
+  '/:id',
+  [
+    validateJWT,
+    check('id', 'Invalid ID').isMongoId(),
+    compareJwtInfoAndParamID,
+  ],
+  cuackPut
+);
 
-router.put('/d/:id', [validateJWT, check('id', 'Invalid ID').isMongoId()], cuackDelete);
+router.put(
+  '/d/:id',
+  [
+    validateJWT,
+    check('id', 'Invalid ID').isMongoId(),
+    compareJwtInfoAndParamID,
+  ],
+  cuackDelete
+);
 
 export default router;

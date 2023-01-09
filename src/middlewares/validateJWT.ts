@@ -34,4 +34,23 @@ export const validateJWT = async (
   }
 };
 
+export const compareJwtInfoAndParamID = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.header('authorization');
+
+  const privateKey: string | undefined = process.env.SECRETORPRIVATEKEY;
+  if (!privateKey)
+    throw Error('Environment variables not loaded (validateJWT)');
+  // @ts-ignore
+  const { id } = jwt.verify(token, privateKey);
+
+  if (req.params.id === id) return next();
+  return res
+    .status(401)
+    .send({ response: false, msg: 'Token not match param id' });
+};
+
 // Vendo empanadas

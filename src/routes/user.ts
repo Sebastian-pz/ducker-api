@@ -14,7 +14,10 @@ import {
   userDelete,
 } from '../controllers/user';
 
-import { validateJWT } from '../middlewares/validateJWT';
+import {
+  validateJWT,
+  compareJwtInfoAndParamID,
+} from '../middlewares/validateJWT';
 
 const router = express.Router();
 
@@ -57,6 +60,7 @@ router.put(
     validateJWT,
     check('id', 'Invalid ID').isMongoId(),
     check('id').custom(existUser),
+    compareJwtInfoAndParamID,
     validateFields,
   ],
   usersPut
@@ -65,8 +69,10 @@ router.put(
 router.delete(
   '/:id',
   [
+    validateJWT,
     check('id', 'Invalid ID').isMongoId(),
     check('id').custom(existUser),
+    compareJwtInfoAndParamID,
     validateFields,
   ],
   userDelete
