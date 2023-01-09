@@ -5,11 +5,8 @@ import {
   cuacksByID,
   cuacksByUser,
   cuackDelete,
-} from '../controllers/cuacks';
-import {
-  compareJwtInfoAndParamID,
-  validateJWT,
-} from '../middlewares/validateJWT';
+} from '../controllers';
+import { validateJWT, compareJwtInfoAndParamID } from '../middlewares';
 import { check } from 'express-validator';
 
 const router = express.Router();

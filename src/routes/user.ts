@@ -4,20 +4,20 @@ import {
   validateFields,
   validateNickname,
   validatePassword,
-} from '../middlewares/validateField';
-import { existEmail, existNickname, existUser } from '../middlewares/db';
+  validateJWT,
+  existEmail,
+  existNickname,
+  existUser,
+  compareJwtInfoAndParamID
+} from '../middlewares';
+
 import {
-  userPost,
   usersGet,
+  userPost,
   userID,
   usersPut,
   userDelete,
-} from '../controllers/user';
-
-import {
-  validateJWT,
-  compareJwtInfoAndParamID,
-} from '../middlewares/validateJWT';
+} from '../controllers';
 
 const router = express.Router();
 
