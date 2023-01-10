@@ -147,7 +147,7 @@ export const removeComment = async (req: Request, res: Response) => {
 	const { idAuthorOrigin, idCuackOrigin, idComment } = req.body;
 	if (!idAuthorOrigin || !idCuackOrigin || !idComment)
 		return res.status(404).send({ msg: 'Missing info' });
-	const r = await remove(idAuthorOrigin, idComment);
-	if (r) return res.status(200).send({ msg: 'Se me retornó un true' });
+	const r = await remove(idAuthorOrigin, idComment, idCuackOrigin);
+	if (r) return res.status(200).send({ msg: 'Comment removed succesfully' });
 	return res.status(500).send({ msg: 'Algo no salió bien' });
 };
