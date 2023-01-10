@@ -1,10 +1,12 @@
 import express from 'express';
 import {
-  cuackPost,
-  cuackPut,
-  cuacksByID,
-  cuacksByUser,
-  cuackDelete,
+	cuackPost,
+	cuackPut,
+	cuacksByID,
+	cuacksByUser,
+	cuackDelete,
+	reportCuack,
+	removeComment,
 } from '../controllers';
 import { validateJWT, compareJwtInfoAndParamID } from '../middlewares';
 import { check } from 'express-validator';
@@ -18,23 +20,23 @@ router.get('/c/:id', [check('id', 'Invalid ID').isMongoId()], cuacksByID);
 router.post('/', [validateJWT], cuackPost);
 
 router.put(
-  '/:id',
-  [
-    validateJWT,
-    check('id', 'Invalid ID').isMongoId(),
-    compareJwtInfoAndParamID,
-  ],
-  cuackPut
+	'/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), compareJwtInfoAndParamID],
+	cuackPut
 );
 
 router.put(
-  '/d/:id',
-  [
-    validateJWT,
-    check('id', 'Invalid ID').isMongoId(),
-    compareJwtInfoAndParamID,
-  ],
-  cuackDelete
+	'/r/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), compareJwtInfoAndParamID],
+	reportCuack
 );
+
+router.put(
+	'/d/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), compareJwtInfoAndParamID],
+	cuackDelete
+);
+
+router.delete('/comment', removeComment);
 
 export default router;

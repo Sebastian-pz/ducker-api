@@ -1,22 +1,14 @@
 import { commentInterface } from '../../types/index';
 import User from '../../models/user';
 
-const addComment = async (
-	id: string,
-	cuack_id: string,
-	comment: commentInterface
-): Promise<any> => {
+const addComment = async (id: string, cuackID: string, comment: commentInterface): Promise<any> => {
 	try {
-		const user = await User.findOne({ _id: id });
-		const cuacks = user?.cuacks;
-		if (!cuacks) return;
+		const response = await User.updateOne(
+			{ id, 'cuacks._id': cuackID },
+			{ $push: { 'cuacks.$.comments': comment } }
+		);
 
-		// @ts-ignore
-		const cuack = cuacks.find((cuack) => cuack._id == cuack_id);
-		cuack?.comments.push(comment);
-		await user.save();
-
-		return true;
+		return response.modifiedCount;
 	} catch (error) {
 		console.log(`Error pushing a comment: ${error}`);
 		return false;

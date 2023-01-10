@@ -4,6 +4,7 @@ import addComment from './utils/addComment';
 import addLike from './utils/addLike';
 import addRecuacks from './utils/addRecuacks';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
+import { remove } from './utils/removeComment';
 
 export const cuackPost = async (req: Request, res: Response) => {
 	const { cuack } = req.body;
@@ -121,4 +122,32 @@ export const cuackDelete = async (req: Request, res: Response) => {
 		console.log(`cuackDelete internal server error: ${error}`);
 		return res.status(500).send({ msg: 'Internal server error' });
 	}
+};
+
+export const reportCuack = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const { cuackID } = req.body;
+
+	try {
+		if (!id || !cuackID) {
+			console.log('missing data');
+			return res.status(400).send({ msg: 'missing data' });
+		}
+		await User.findOneAndUpdate({ id, 'cuacks._id': cuackID }, { $inc: { 'cuacks.$.reports': 1 } });
+		return res.status(201).send({ msg: 'report received succesfully' });
+	} catch (error) {
+		console.log(`cuackReport internal server error: ${error}`);
+		return res.status(500).send({ msg: 'Internal server error' });
+	}
+};
+
+//Eliminar comentarios, likes y recuacks
+
+export const removeComment = async (req: Request, res: Response) => {
+	const { idAuthorOrigin, idCuackOrigin, idComment } = req.body;
+	if (!idAuthorOrigin || !idCuackOrigin || !idComment)
+		return res.status(404).send({ msg: 'Missing info' });
+	const r = await remove(idAuthorOrigin, idComment);
+	if (r) return res.status(200).send({ msg: 'Se me retornó un true' });
+	return res.status(500).send({ msg: 'Algo no salió bien' });
 };
