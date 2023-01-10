@@ -2,6 +2,13 @@ import { validationResult } from 'express-validator';
 import { Response, Request, NextFunction } from 'express';
 import { noBanWords, noSpecialCharacters } from './utils/fields';
 
+/**
+ * validateFields (express middleware) checks if error list is empty
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns if error list is empty return next, else return status 400 and send errors
+ */
 export const validateFields = (
   req: Request,
   res: Response,
@@ -9,12 +16,18 @@ export const validateFields = (
 ) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json(errors);
+    return res.status(400).send(errors);
   }
-
   return next();
 };
 
+/**
+ * validatePassword (express middleware) checks if password is valid (does not have any special characters)
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns if is a valid password return next, else return status 400 and send errors
+ */
 export const validatePassword = (
   req: Request,
   res: Response,
@@ -36,6 +49,13 @@ export const validatePassword = (
   });
 };
 
+/**
+ * validateNickname (express middleware) checks if nickname is valid (does not have any special characters and no ban words)
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns if is a valid nickname return next, else return status 400 and send errors
+ */
 export const validateNickname = (
   req: Request,
   res: Response,
