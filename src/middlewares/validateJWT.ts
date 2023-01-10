@@ -2,6 +2,14 @@ import { Response, Request, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 
+/**
+ * validateJWT (async - express middleware) checks if json web token is valid
+ * @param {Request} req req.header('authorization')
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns if is a valid jwt return next, else return status
+ *  (407 | 401 | 500) and respective errors
+ */
 export const validateJWT = async (
   req: Request,
   res: Response,
@@ -25,7 +33,6 @@ export const validateJWT = async (
 
     //Verify user state
     if (!user.state) return res.status(401).send({ msg: 'User blocked' });
-
     req.user = user;
     return next();
   } catch (error) {
@@ -34,6 +41,15 @@ export const validateJWT = async (
   }
 };
 
+/**
+ * compareJwtInfoAndParamID (async - express middleware) checks if jwt.id
+ * and user's expected operation has the same id
+ * @param {Request} req req.header('authorization') & req.params.id
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns if jwt and operation user id match return next,
+ * else return status 401, response false & 'Token not match'
+ */
 export const compareJwtInfoAndParamID = (
   req: Request,
   res: Response,
