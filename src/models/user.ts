@@ -1,165 +1,116 @@
 import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema({
-	fullname: {
-		type: String,
-		required: [true, 'The name is required'],
-	},
+  fullname: {
+    type: String,
+    required: [true, 'The name is required'],
+  },
 
-	nickname: {
-		type: String,
-		required: true,
-	},
+  nickname: {
+    type: String,
+    required: true,
+  },
 
-	location: {
-		type: String,
-		required: false,
-	},
+  location: {
+    type: String,
+    required: false,
+  },
 
-	email: {
-		type: String,
-		required: [true, 'The email is required'],
-		unique: true,
-	},
+  email: {
+    type: String,
+    required: [true, 'The email is required'],
+    unique: true,
+  },
 
-	confirmedEmail: {
-		type: Boolean,
-		default: false,
-	},
+  confirmedEmail: {
+    type: Boolean,
+    default: false,
+  },
 
-	verifiedUser: {
-		type: Boolean,
-		default: false,
-	},
+  verifiedUser: {
+    type: Boolean,
+    default: false,
+  },
 
-	password: {
-		type: String,
-		required: [true, 'The password is required'],
-	},
+  password: {
+    type: String,
+    required: [true, 'The password is required'],
+  },
 
-	img: {
-		type: String,
-	},
+  img: {
+    type: String,
+  },
 
-	role: {
-		type: String,
-		required: true,
-		enum: ['ADMIN_ROLE', 'USER_ROLE'],
-		default: 'USER_ROLE',
-	},
+  role: {
+    type: String,
+    required: true,
+    enum: ['ADMIN_ROLE', 'USER_ROLE'],
+    default: 'USER_ROLE',
+  },
 
-	state: {
-		type: Boolean,
-		default: true,
-	},
+  state: {
+    type: Boolean,
+    default: true,
+  },
 
-	google: {
-		type: Boolean,
-		default: false,
-	},
+  google: {
+    type: Boolean,
+    default: false,
+  },
 
-	description: {
-		type: String,
-		required: false,
-	},
+  description: {
+    type: String,
+    required: false,
+  },
 
-	creationDate: {
-		type: Date,
-		default: Date.now,
-	},
+  creationDate: {
+    type: Date,
+    default: Date.now,
+  },
 
-	birthday: {
-		type: Date,
-		required: false,
-	},
+  birthday: {
+    type: Date,
+    required: false,
+  },
 
-	likes: [
-		{
-			id: { type: String },
-		},
-	],
+  likes: [{ type: String, trim: true }],
 
-	recuacks: [
-		{
-			id: { type: String },
-		},
-	],
+  recuacks: [{ type: String }],
 
-	following: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+  following: [{ type: String, trim: true }],
 
-	followers: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+  followers: [{ type: String, trim: true }],
 
-	silenced: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+  silenced: [{ type: String, trim: true }],
 
-	blocked: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+  blocked: [{ type: String, trim: true }],
 
-	interests: [
-		{
-			interest: { type: String },
-		},
-	],
+  interests: [{ type: String, trim: true }],
 
-	cuacks: [
-		{
-			author: { type: String, trim: true },
-			content: { type: String, trim: true },
-			likes: [{ type: String }],
-			recuacks: [{ type: String }],
-			date: { type: Date, default: Date.now },
-			reports: { type: Number },
-			comments: [
-				{
-					author: { type: String, trim: true },
-					content: { type: String, trim: true },
-					likes: [{ type: String }],
-					recuacks: [{ type: String }],
-					date: { type: Date, default: Date.now },
-					reports: { type: Number },
-				},
-			],
-			category: { type: String },
-			isPublic: { type: Boolean, default: true },
-		},
-	],
+  cuacks: [{ type: String }],
 
-	notifications: [
-		{
-			new: { type: Boolean, default: true },
-			content: { type: String, default: '' },
-			message: { type: String, require: true, default: '' },
-			img: { type: String },
-		},
-	],
+  notifications: [
+    {
+      new: { type: Boolean, default: true },
+      content: { type: String, default: '' },
+      message: { type: String, require: true, default: '' },
+      img: { type: String },
+    },
+  ],
 
-	responses: [
-		{
-			originalID: { type: String, required: true },
-			commentID: { type: String, required: true },
-		},
-	],
+  responses: [
+    {
+      originalID: { type: String, required: true },
+      commentID: { type: String, required: true },
+    },
+  ],
 });
 
 userSchema.methods.toJSON = function () {
-	const { __v, password, _id, ...user } = this.toObject();
-	user.id = _id;
+  const { __v, password, _id, ...user } = this.toObject();
+  user.id = _id;
 
-	return user;
+  return user;
 };
 
 export default model('User', userSchema);
