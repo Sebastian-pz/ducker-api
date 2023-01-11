@@ -1,11 +1,29 @@
 import User from '../../models/user';
 
 //HAY QUE PROBAR
-export async function removeLike(idAuthorOrigin: string, idCuackOrigin: string, idLike: string) {
-	const response = await User.updateOne(
-		{ _id: idAuthorOrigin, 'cuacks._id': idCuackOrigin },
-		{ $pull: { 'cuacks.$.likes': idLike } }
-	);
+export const cancelLike = async (
+	idAuthorOrigin: string,
+	idCuackOrigin: string,
+	idLike: string
+): Promise<boolean> => {
+	try {
+		const user = await User.findOne({ id: idAuthorOrigin });
+		if (!user) return false;
 
-	return response.modifiedCount;
-}
+		// @ts-ignore
+		let mainCuack = user.cuacks.find((cuack) => cuack._id.toString() === idCuackOrigin);
+		// @ts-ignore
+		mainCuack = mainCuack.likes.filter((like) => like !== idLike);
+
+		await User.updateOne(
+			{ _id: idAuthorOrigin, 'cuacks._id': idCuackOrigin },
+			{ 'cuacks.$.likes': mainCuack }
+		);
+		await user.save();
+
+		return true;
+	} catch (error) {
+		console.log(`Remove like internal server error: ${error}`);
+		return false;
+	}
+};

@@ -7,6 +7,8 @@ import {
 	cuackDelete,
 	reportCuack,
 	removeComment,
+	removeRecuack,
+	removeLike,
 } from '../controllers';
 import { validateJWT, compareJwtInfoAndParamID } from '../middlewares';
 import { check } from 'express-validator';
@@ -37,6 +39,10 @@ router.put(
 	cuackDelete
 );
 
-router.delete('/comment', removeComment);
+router.delete('/comment', [validateJWT], removeComment);
+
+router.delete('/recuack', [validateJWT], removeRecuack);
+
+router.delete('/like', [validateJWT], removeLike);
 
 export default router;

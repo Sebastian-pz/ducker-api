@@ -5,6 +5,8 @@ import addLike from './utils/addLike';
 import addRecuacks from './utils/addRecuacks';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
 import { remove } from './utils/removeComment';
+import { cancelLike } from './utils/removeLike';
+import { cancelRecuack } from './utils/removeRecuack';
 
 export const cuackPost = async (req: Request, res: Response) => {
 	const { cuack } = req.body;
@@ -149,5 +151,27 @@ export const removeComment = async (req: Request, res: Response) => {
 		return res.status(404).send({ msg: 'Missing info' });
 	const r = await remove(idAuthorOrigin, idComment, idCuackOrigin);
 	if (r) return res.status(200).send({ msg: 'Comment removed succesfully' });
+	return res.status(500).send({ msg: 'Algo no salió bien' });
+};
+
+export const removeRecuack = async (req: Request, res: Response) => {
+	const { idAuthorOrigin, idCuackOrigin, idRecuack } = req.body;
+
+	if (!idAuthorOrigin || !idCuackOrigin || !idRecuack)
+		return res.status(404).send({ msg: 'Missing info' });
+
+	const r = await cancelRecuack(idAuthorOrigin, idCuackOrigin, idRecuack);
+	if (r) return res.status(200).send({ msg: 'ReCuack removed succesfully' });
+	return res.status(500).send({ msg: 'Algo no salió bien' });
+};
+
+export const removeLike = async (req: Request, res: Response) => {
+	const { idAuthorOrigin, idCuackOrigin, idLike } = req.body;
+
+	if (!idAuthorOrigin || !idCuackOrigin || !idLike)
+		return res.status(404).send({ msg: 'Missing info' });
+
+	const r = await cancelLike(idAuthorOrigin, idCuackOrigin, idLike);
+	if (r) return res.status(200).send({ msg: 'Like removed succesfully' });
 	return res.status(500).send({ msg: 'Algo no salió bien' });
 };
