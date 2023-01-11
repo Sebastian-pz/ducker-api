@@ -1,6 +1,6 @@
 import User from '../../models/user';
 
-const addLike = async (authorID: string, likeID: string, cuackID: string): Promise<any> => {
+export const addLike = async (authorID: string, likeID: string, cuackID: string): Promise<any> => {
 	try {
 		const response = await User.updateOne(
 			{ _id: authorID, 'cuacks._id': cuackID },
@@ -12,8 +12,6 @@ const addLike = async (authorID: string, likeID: string, cuackID: string): Promi
 		return false;
 	}
 };
-
-export default addLike;
 
 // Seba vende empanadas
 // 🥟🥟

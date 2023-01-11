@@ -3,6 +3,7 @@ import User from '../models/user';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
 import Cuack from '../models/cuack';
 
+
 export const cuackPost = async (req: Request, res: Response) => {
   const { cuack } = req.body;
 

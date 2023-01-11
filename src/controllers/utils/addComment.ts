@@ -1,7 +1,11 @@
 import { commentInterface } from '../../types/index';
 import User from '../../models/user';
 
-const addComment = async (id: string, cuackID: string, comment: commentInterface): Promise<any> => {
+export const addComment = async (
+	id: string,
+	cuackID: string,
+	comment: commentInterface
+): Promise<any> => {
 	try {
 		const response = await User.updateOne(
 			{ id, 'cuacks._id': cuackID },
@@ -14,5 +18,3 @@ const addComment = async (id: string, cuackID: string, comment: commentInterface
 		return false;
 	}
 };
-
-export default addComment;
