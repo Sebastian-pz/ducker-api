@@ -1,48 +1,72 @@
 import express from 'express';
 import {
-	cuackPost,
-	cuackPut,
-	cuacksByID,
-	cuacksByUser,
-	cuackDelete,
-	reportCuack,
-	removeComment,
-	removeRecuack,
-	removeLike,
+  cuackPost,
+  getAllCuacks,
+  deleteCuack,
+  addComment,
+  reCuack,
+  likeCuack,
+  removeLikeCuack,
+  removeReCuack,
+  removeComment,
 } from '../controllers';
-import { validateJWT, compareJwtInfoAndParamID } from '../middlewares';
-import { check } from 'express-validator';
+import { validateJWT } from '../middlewares';
+// import { check } from 'express-validator';
 
 const router = express.Router();
 
-router.get('/u/:id', [check('id', 'Invalid ID').isMongoId()], cuacksByUser);
-
-router.get('/c/:id', [check('id', 'Invalid ID').isMongoId()], cuacksByID);
-
+router.get('/', getAllCuacks);
 router.post('/', [validateJWT], cuackPost);
+router.delete('/:id', [validateJWT], deleteCuack);
 
-router.put(
-	'/:id',
-	[validateJWT, check('id', 'Invalid ID').isMongoId(), compareJwtInfoAndParamID],
-	cuackPut
-);
+// Agregando comentario - recuack - like
+router.post('/c/:id', addComment);
+router.post('/rc/:id', reCuack);
+router.post('/l/:id', likeCuack);
 
-router.put(
-	'/r/:id',
-	[validateJWT, check('id', 'Invalid ID').isMongoId(), compareJwtInfoAndParamID],
-	reportCuack
-);
+// Eliminando comentario - recuack - like
+router.delete('/c/:id', removeComment);
+router.delete('/rc/:id', removeReCuack);
+router.delete('/l/:id', removeLikeCuack);
 
-router.put(
-	'/d/:id',
-	[validateJWT, check('id', 'Invalid ID').isMongoId(), compareJwtInfoAndParamID],
-	cuackDelete
-);
+// router.get('/u/:id', [check('id', 'Invalid ID').isMongoId()], cuacksByUser);
 
-router.delete('/comment', [validateJWT], removeComment);
+// router.get('/c/:id', [check('id', 'Invalid ID').isMongoId()], cuacksByID);
 
-router.delete('/recuack', [validateJWT], removeRecuack);
+// router.put(
+//   '/:id',
+//   [
+//     validateJWT,
+//     check('id', 'Invalid ID').isMongoId(),
+//     compareJwtInfoAndParamID,
+//   ],
+//   cuackPut
+// );
 
-router.delete('/like', [validateJWT], removeLike);
+// router.put(
+//   '/r/:id',
+//   [
+//     validateJWT,
+//     check('id', 'Invalid ID').isMongoId(),
+//     compareJwtInfoAndParamID,
+//   ],
+//   reportCuack
+// );
+
+// router.put(
+//   '/d/:id',
+//   [
+//     validateJWT,
+//     check('id', 'Invalid ID').isMongoId(),
+//     compareJwtInfoAndParamID,
+//   ],
+//   cuackDelete
+// );
+
+// router.delete('/comment', [validateJWT], removeComment);
+
+// router.delete('/recuack', [validateJWT], removeRecuack);
+
+// router.delete('/like', [validateJWT], removeLike);
 
 export default router;

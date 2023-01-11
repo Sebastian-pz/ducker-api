@@ -1,172 +1,258 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
-import { addRecuacks, addComment, addLike, remove, cancelLike, cancelRecuack } from './utils';
+import Cuack from '../models/cuack';
+
 
 export const cuackPost = async (req: Request, res: Response) => {
-	const { cuack } = req.body;
+  const { cuack } = req.body;
 
-	if (!cuack) return res.status(400).send({ response: false, msg: 'Missing info' });
+  if (!cuack)
+    return res.status(400).send({ response: false, msg: 'Missing info' });
 
-	if (!noSpecialCharactersContent(cuack.content)) {
-		return res.status(400).send({ response: false, msg: 'Special characters is not allowed.' });
-	}
+  if (!noSpecialCharactersContent(cuack.content)) {
+    return res
+      .status(400)
+      .send({ response: false, msg: 'Special characters is not allowed.' });
+  }
 
-	try {
-		User.findOneAndUpdate(
-			{ _id: cuack.author },
-			{ $push: { cuacks: cuack } },
-			function (error: any, _success: any) {
-				if (error) {
-					return res.status(400).send({ response: false, msg: 'Post was not published' });
-				}
-				return res.status(202).send({ response: true, msg: 'Post published' });
-			}
-		);
-	} catch (error) {
-		console.log(`Error posting a cuack ${error}`);
-		return res.status(500).send({ response: false, msg: 'Internal server error' });
-	}
-
-	return;
+  try {
+    const newCuack = await Cuack.create(cuack);
+    await User.updateOne({ id: cuack.id }, { $push: { cuacks: newCuack._id } });
+    return res.status(201).send({ response: true, payload: newCuack });
+  } catch (error) {
+    console.log(`Error CuackPost, Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
 
-//likes, comments & recuacks
-export const cuackPut = async (req: Request, res: Response) => {
-	const id = req.params.id;
-	const { likeID, comment, cuackID, recuackID } = req.body;
-
-	if (id && likeID && cuackID) {
-		const response = await addLike(id, likeID, cuackID);
-		if (response) {
-			return res.status(202).send({ response: true, msg: 'Likes updated successfully' });
-		} else {
-			return res.status(500).send({ response: false, msg: 'Error in like post' });
-		}
-	}
-
-	if (id && comment && cuackID) {
-		const response = await addComment(id, cuackID, comment);
-		if (response) {
-			return res.status(202).send({ response: true, msg: 'Comment updated successfully' });
-		} else {
-			return res.status(500).send({ response: false, msg: 'Error, you could comment' });
-		}
-	}
-
-	if (id && recuackID && cuackID) {
-		const response = await addRecuacks(id, recuackID, cuackID);
-		if (response) {
-			return res.status(202).send({ response: true, msg: 'Recuack updated successfully' });
-		} else {
-			return res.status(500).send({ response: false, msg: 'Error in recuack post' });
-		}
-	}
-	return res.status(400).send({ response: false, msg: 'Missing information' });
+export const getAllCuacks = async (_req: Request, res: Response) => {
+  try {
+    const cuacks = await Cuack.find();
+    return res.status(200).send({
+      total: cuacks.length,
+      cuacks,
+    });
+  } catch (error) {
+    console.log(`Error getting cuacks, Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
 
-export const cuacksByUser = async (req: Request, res: Response) => {
-	const { since = '0', limit = '10' } = req.query;
-	const { id } = req.params;
-	let s: number = 0;
-	let l: number = 10;
+export const deleteCuack = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
-	if (since && typeof since === 'string') s = parseInt(since);
-	if (limit && typeof limit === 'string') l = parseInt(limit);
+  if (!id)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
 
-	try {
-		const user = await User.findOne({ id });
-
-		if (!user) return res.status(400).send({ response: false, msg: 'Invalid ID or missing info' });
-
-		const total = user.cuacks.length;
-		const cuacks = user.cuacks.slice(s, l);
-		return res.status(200).send({ total, cuacks });
-	} catch (error) {
-		console.log(`Error getting cuacks, ${error}`);
-		return res.status(500).send({ response: false, msg: 'Internal server error' });
-	}
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $set: { isPublic: false } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(`Error 'deleting' cuack', Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
 
-export const cuacksByID = async (req: Request, res: Response) => {
-	try {
-		const id = req.params.id;
-		const { cuackID } = req.body;
+export const addComment = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { cuack } = req.body;
 
-		const user = await User.findById(id);
-		// @ts-ignore
-		const userCuack = user && user.cuacks.find((cuack) => cuack.id === cuackID);
-		return res.status(201).send({ response: true, userCuack });
-	} catch (error) {
-		console.log(`Error searching a cuack: ${error}`);
-		return res.status(500).send({ response: false, msg: 'Internal server error' });
-	}
+  if (!id || !cuack)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
+
+  cuack.before = id;
+
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $push: { comments: cuack } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+    await User.updateOne(
+      { id: cuack.author },
+      { $push: { cuacks: update.id } }
+    );
+
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(`Error adding comment, Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
-
-export const cuackDelete = async (req: Request, res: Response) => {
-	const id = req.params.id;
-	const { cuackID } = req.body;
-
-	try {
-		await User.findOneAndUpdate(
-			{ id, 'cuacks._id': cuackID },
-			{ 'cuacks.$.isPublic': false },
-			{ new: true }
-		);
-
-		return res.status(202).send({ response: true, msg: 'Cuack deleted successfully' });
-	} catch (error) {
-		console.log(`cuackDelete internal server error: ${error}`);
-		return res.status(500).send({ msg: 'Internal server error' });
-	}
-};
-
-export const reportCuack = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { cuackID } = req.body;
-
-	try {
-		if (!id || !cuackID) {
-			console.log('missing data');
-			return res.status(400).send({ msg: 'missing data' });
-		}
-		await User.findOneAndUpdate({ id, 'cuacks._id': cuackID }, { $inc: { 'cuacks.$.reports': 1 } });
-		return res.status(201).send({ msg: 'report received succesfully' });
-	} catch (error) {
-		console.log(`cuackReport internal server error: ${error}`);
-		return res.status(500).send({ msg: 'Internal server error' });
-	}
-};
-
-//Eliminar comentarios, likes y recuacks
 
 export const removeComment = async (req: Request, res: Response) => {
-	const { idAuthorOrigin, idCuackOrigin, idComment } = req.body;
-	if (!idAuthorOrigin || !idCuackOrigin || !idComment)
-		return res.status(404).send({ msg: 'Missing info' });
-	const r = await remove(idAuthorOrigin, idComment, idCuackOrigin);
-	if (r) return res.status(200).send({ msg: 'Comment removed succesfully' });
-	return res.status(500).send({ msg: 'Algo no salió bien' });
+  const { id } = req.params;
+  const { cuack } = req.body;
+
+  if (!id || !cuack)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
+
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $pull: { comments: cuack } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+    await User.updateOne(
+      { id: update.author },
+      { $pull: { cuacks: update.id } }
+    );
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(`Error adding comment, Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
 
-export const removeRecuack = async (req: Request, res: Response) => {
-	const { idAuthorOrigin, idCuackOrigin, idRecuack } = req.body;
+export const reCuack = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { user } = req.body;
 
-	if (!idAuthorOrigin || !idCuackOrigin || !idRecuack)
-		return res.status(404).send({ msg: 'Missing info' });
+  if (!id || !user)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
 
-	const r = await cancelRecuack(idAuthorOrigin, idCuackOrigin, idRecuack);
-	if (r) return res.status(200).send({ msg: 'ReCuack removed succesfully' });
-	return res.status(500).send({ msg: 'Algo no salió bien' });
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $push: { recuacks: user } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+
+    await User.updateOne({ id: user }, { $push: { recuacks: update.id } });
+
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(`Error in recuack function, Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
 
-export const removeLike = async (req: Request, res: Response) => {
-	const { idAuthorOrigin, idCuackOrigin, idLike } = req.body;
+export const removeReCuack = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { user } = req.body;
 
-	if (!idAuthorOrigin || !idCuackOrigin || !idLike)
-		return res.status(404).send({ msg: 'Missing info' });
+  if (!id || !user)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
 
-	const r = await cancelLike(idAuthorOrigin, idCuackOrigin, idLike);
-	if (r) return res.status(200).send({ msg: 'Like removed succesfully' });
-	return res.status(500).send({ msg: 'Algo no salió bien' });
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $pull: { recuacks: user } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+
+    await User.updateOne({ id: user }, { $pull: { recuacks: update.id } });
+
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(
+      `Error in remove recuack function, Internal server error: ${error}`
+    );
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
+};
+
+export const likeCuack = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { user } = req.body;
+
+  if (!id || !user)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
+
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $push: { likes: user } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+
+    await User.updateOne({ id: user }, { $push: { likes: update.id } });
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(`Error in like function, Internal server error: ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
+};
+
+export const removeLikeCuack = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { user } = req.body;
+
+  if (!id || !user)
+    return res.status(400).send({ response: false, payload: 'Missing data' });
+
+  try {
+    const update = await Cuack.findOneAndUpdate(
+      { id },
+      { $pull: { likes: user } }
+    );
+    if (!update)
+      return res
+        .status(400)
+        .send({ response: false, payload: 'failed to update' });
+
+    await User.updateOne({ id: user }, { $pull: { likes: update.id } });
+
+    return res
+      .status(200)
+      .send({ response: true, payload: 'successfully updated' });
+  } catch (error) {
+    console.log(
+      `Error in remove like function, Internal server error: ${error}`
+    );
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
 };
