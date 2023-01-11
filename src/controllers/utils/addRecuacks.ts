@@ -1,6 +1,10 @@
 import User from '../../models/user';
 
-const addRecuacks = async (authorID: string, recuackID: string, cuack_id: string): Promise<any> => {
+export const addRecuacks = async (
+	authorID: string,
+	recuackID: string,
+	cuack_id: string
+): Promise<any> => {
 	try {
 		const user = await User.updateOne(
 			{ id: authorID, 'cuacks._id': cuack_id },
@@ -13,5 +17,3 @@ const addRecuacks = async (authorID: string, recuackID: string, cuack_id: string
 		return false;
 	}
 };
-
-export default addRecuacks;

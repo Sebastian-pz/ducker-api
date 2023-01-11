@@ -1,12 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
-import addComment from './utils/addComment';
-import addLike from './utils/addLike';
-import addRecuacks from './utils/addRecuacks';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
-import { remove } from './utils/removeComment';
-import { cancelLike } from './utils/removeLike';
-import { cancelRecuack } from './utils/removeRecuack';
+import { addRecuacks, addComment, addLike, remove, cancelLike, cancelRecuack } from './utils';
 
 export const cuackPost = async (req: Request, res: Response) => {
 	const { cuack } = req.body;
