@@ -1,22 +1,26 @@
 import express from 'express';
 import { check } from 'express-validator';
 import {
-  validateFields,
-  validateNickname,
-  validatePassword,
-  validateJWT,
-  existEmail,
-  existNickname,
-  existUser,
-  compareJwtInfoAndParamID
+	validateFields,
+	validateNickname,
+	validatePassword,
+	validateJWT,
+	existEmail,
+	existNickname,
+	existUser,
+	compareJwtInfoAndParamID,
 } from '../middlewares';
 
 import {
-  usersGet,
-  userPost,
-  userID,
-  usersPut,
-  userDelete,
+	usersGet,
+	userPost,
+	userID,
+	usersPut,
+	userDelete,
+	userFollowing,
+	userFollowers,
+	userSilenced,
+	userBlocked,
 } from '../controllers';
 
 const router = express.Router();
@@ -24,58 +28,75 @@ const router = express.Router();
 router.get('/', usersGet);
 
 router.get(
-  '/:id',
-  [
-    check('id', 'Invalid ID').isMongoId(),
-    check('id').custom(existUser),
-    validateFields,
-  ],
-  userID
+	'/:id',
+	[check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser), validateFields],
+	userID
 );
 
 router.post(
-  '/',
-  [
-    check('email', 'Invalid email :D').isEmail(),
-    check('email').custom(existEmail),
-    check('fullname', 'Full name is required').not().isEmpty(),
-    check('nickname', 'Nick name is required').not().isEmpty(),
-    check('nickname').custom(existNickname),
-    check(
-      'password',
-      'password is required and its length needs to be more than 6'
-    ).isLength({
-      min: 6,
-    }),
-    validateFields,
-    validatePassword,
-    validateNickname,
-  ],
-  userPost
+	'/',
+	[
+		check('email', 'Invalid email :D').isEmail(),
+		check('email').custom(existEmail),
+		check('fullname', 'Full name is required').not().isEmpty(),
+		check('nickname', 'Nick name is required').not().isEmpty(),
+		check('nickname').custom(existNickname),
+		check('password', 'password is required and its length needs to be more than 6').isLength({
+			min: 6,
+		}),
+		validateFields,
+		validatePassword,
+		validateNickname,
+	],
+	userPost
 );
 
 router.put(
-  '/:id',
-  [
-    validateJWT,
-    check('id', 'Invalid ID').isMongoId(),
-    check('id').custom(existUser),
-    compareJwtInfoAndParamID,
-    validateFields,
-  ],
-  usersPut
+	'/:id',
+	[
+		validateJWT,
+		check('id', 'Invalid ID').isMongoId(),
+		check('id').custom(existUser),
+		compareJwtInfoAndParamID,
+		validateFields,
+	],
+	usersPut
 );
 
 router.delete(
-  '/:id',
-  [
-    validateJWT,
-    check('id', 'Invalid ID').isMongoId(),
-    check('id').custom(existUser),
-    compareJwtInfoAndParamID,
-    validateFields,
-  ],
-  userDelete
+	'/:id',
+	[
+		validateJWT,
+		check('id', 'Invalid ID').isMongoId(),
+		check('id').custom(existUser),
+		compareJwtInfoAndParamID,
+		validateFields,
+	],
+	userDelete
+);
+
+router.put(
+	'/following/:idUserOne',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userFollowing
+);
+
+router.put(
+	'/followers/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userFollowers
+);
+
+router.put(
+	'/silenced/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userSilenced
+);
+
+router.put(
+	'/blocked/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userBlocked
 );
 
 export default router;

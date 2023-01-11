@@ -5,6 +5,10 @@ import { Request, Response } from 'express';
 import { googleVerify } from '../middlewares/googleVerify';
 import { generatePass, generateNickname } from './utils';
 
+/**
+ * login (async) tries to log in a user
+ * @returns jwt / error
+ */
 export const login = async (req: Request, res: Response) => {
 	const { email, password } = req.body;
 
@@ -29,6 +33,10 @@ export const login = async (req: Request, res: Response) => {
 	}
 };
 
+/**
+ * googleSignIn (async) tries to log in with google a user
+ * @returns jwt / error
+ */
 export const googleSignIn = async (req: Request, res: Response) => {
 	const { id_token } = req.body;
 
