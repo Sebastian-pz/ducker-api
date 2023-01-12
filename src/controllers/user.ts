@@ -2,7 +2,16 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/user';
 import { noSpecialCharacters } from '../middlewares/utils/fields';
-import { addFollowing, addFollower, addBlocked, addSilenced } from './utils';
+import {
+	addFollowing,
+	addFollower,
+	addBlocked,
+	addSilenced,
+	removeFollower,
+	removeFollowing,
+	removeSilenced,
+	removeBlocked,
+} from './utils';
 
 export const usersGet = async (req: Request, res: Response) => {
 	const { since = 0, from = 10 } = req.query;
@@ -112,6 +121,20 @@ export const userFollowing = async (req: Request, res: Response) => {
 	return res.status(500).send({ msg: 'Internal server error' });
 };
 
+export const userUnfollowing = async (req: Request, res: Response) => {
+	const { idUserOne } = req.params;
+	const { idUserTwo } = req.body;
+
+	const [following, follower] = await Promise.all([
+		removeFollowing(idUserOne, idUserTwo),
+		removeFollower(idUserTwo, idUserOne),
+	]);
+
+	if (following && follower)
+		return res.status(200).send({ msg: 'Unfollow succesfully', following, follower });
+	return res.status(500).send({ msg: 'Internal server error' });
+};
+
 export const userFollowers = async (req: Request, res: Response) => {
 	const { id } = req.params;
 	const idOtherUser = req.body;
@@ -123,19 +146,37 @@ export const userFollowers = async (req: Request, res: Response) => {
 
 export const userSilenced = async (req: Request, res: Response) => {
 	const { id } = req.params;
-	const idOtherUser = req.body;
+	const { idOtherUser } = req.body;
 	const resp = await addSilenced(id, idOtherUser);
 
 	if (resp) return res.status(200).send({ msg: 'Silenced added succesfully', resp });
 	return res.status(500).send({ msg: 'Internal server error' });
 };
 
+export const userRemoveSilenced = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const { idOtherUser } = req.body;
+	const resp = await removeSilenced(id, idOtherUser);
+
+	if (resp) return res.status(200).send({ msg: 'Silenced removed succesfully', resp });
+	return res.status(500).send({ msg: 'Internal server error' });
+};
+
 export const userBlocked = async (req: Request, res: Response) => {
 	const { id } = req.params;
-	const idOtherUser = req.body;
+	const { idOtherUser } = req.body;
 	const resp = await addBlocked(id, idOtherUser);
 
 	if (resp) return res.status(200).send({ msg: 'Blocked added succesfully', resp });
+	return res.status(500).send({ msg: 'Internal server error' });
+};
+
+export const userRemoveBlocked = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const { idOtherUser } = req.body;
+	const resp = await removeBlocked(id, idOtherUser);
+
+	if (resp) return res.status(200).send({ msg: 'Blocked removed succesfully', resp });
 	return res.status(500).send({ msg: 'Internal server error' });
 };
 

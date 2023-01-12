@@ -21,6 +21,9 @@ import {
 	userFollowers,
 	userSilenced,
 	userBlocked,
+	userUnfollowing,
+	userRemoveSilenced,
+	userRemoveBlocked,
 } from '../controllers';
 
 const router = express.Router();
@@ -76,9 +79,15 @@ router.delete(
 );
 
 router.put(
-	'/following/:idUserOne',
+	'/follow/:idUserOne',
 	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
 	userFollowing
+);
+
+router.put(
+	'/unfollow/:idUserOne',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userUnfollowing
 );
 
 router.put(
@@ -88,15 +97,29 @@ router.put(
 );
 
 router.put(
-	'/silenced/:id',
+	'/mute/:id',
 	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
 	userSilenced
 );
 
 router.put(
-	'/blocked/:id',
+	'/unmute/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userRemoveSilenced
+);
+
+router.put(
+	'/block/:id',
 	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
 	userBlocked
 );
+
+router.put(
+	'/unblock/:id',
+	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
+	userRemoveBlocked
+);
+
+// Mati ama bad bunny
 
 export default router;

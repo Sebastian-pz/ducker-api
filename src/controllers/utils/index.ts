@@ -1,4 +1,3 @@
-export * from './addComment';
 export * from './addLike';
 export * from './addRecuacks';
 export * from './login';
@@ -9,3 +8,8 @@ export * from './addFollowing';
 export * from './addFollower';
 export * from './addBlocked';
 export * from './addSilenced';
+export * from './addBlocked';
+export * from './removeFollowing';
+export * from './removeFollower';
+export * from './removeSilenced';
+export * from './removeBlocked';
