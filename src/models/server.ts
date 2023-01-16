@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import dbConnection from '../database/config';
 import routerUsers from '../routes/user';
 import routerAuth from '../routes/auth';
@@ -40,6 +41,12 @@ class Server {
 
 		//directorio publico
 		this.app.use(express.static('public'));
+
+		this.app.use(
+			cors({
+				origin: ['http://localhost:3000'],
+			})
+		);
 	}
 
 	routes() {
