@@ -3,7 +3,6 @@ import User from '../models/user';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
 import Cuack from '../models/cuack';
 
-
 export const cuackPost = async (req: Request, res: Response) => {
   const { cuack } = req.body;
 
@@ -18,7 +17,10 @@ export const cuackPost = async (req: Request, res: Response) => {
 
   try {
     const newCuack = await Cuack.create(cuack);
-    await User.updateOne({ id: cuack.id }, { $push: { cuacks: newCuack._id } });
+    await User.updateOne(
+      { _id: cuack.author },
+      { $push: { cuacks: newCuack.id } }
+    );
     return res.status(201).send({ response: true, payload: newCuack });
   } catch (error) {
     console.log(`Error CuackPost, Internal server error: ${error}`);
@@ -254,5 +256,36 @@ export const removeLikeCuack = async (req: Request, res: Response) => {
     return res
       .status(500)
       .send({ response: false, payload: 'Internal server error' });
+  }
+};
+
+export const getCustomCuacks = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = await User.findOne({ _id: id });
+  if (!user)
+    return res
+      .status(400)
+      .send({ reponse: false, msg: 'User not found, bad request' });
+
+  let cuacksResponse: any = [];
+
+  console.log(user.following);
+
+  for (const following of user.following) {
+    cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following, 5));
+  }
+  return res.status(200).send({ response: true, payload: cuacksResponse });
+};
+
+const getCuacksByUser = async (user: string, limit: number) => {
+  try {
+    const cuacks = await Cuack.find({ author: user })
+      .sort({ creationDate: -1 })
+      .limit(limit);
+    if (cuacks) return cuacks;
+    return [];
+  } catch (error) {
+    console.log(`Internal server error in getCuacksByUser: ${error}`);
+    return [];
   }
 };
