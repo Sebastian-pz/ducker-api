@@ -39,6 +39,8 @@ const userSchema = new Schema({
 
 	img: {
 		type: String,
+		default:
+			'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674141510/Ducker/user-silouette_x2jf70.png',
 	},
 
 	role: {
@@ -73,70 +75,21 @@ const userSchema = new Schema({
 		required: false,
 	},
 
-	likes: [
-		{
-			id: { type: String },
-		},
-	],
+	likes: [{ type: String, trim: true }],
 
-	recuacks: [
-		{
-			id: { type: String },
-		},
-	],
+	recuacks: [{ type: String }],
 
-	following: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+	following: [{ type: String, trim: true }],
 
-	followers: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+	followers: [{ type: String, trim: true }],
 
-	silenced: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+	silenced: [{ type: String, trim: true }],
 
-	blocked: [
-		{
-			id: { type: String, trim: true },
-		},
-	],
+	blocked: [{ type: String, trim: true }],
 
-	interests: [
-		{
-			interest: { type: String },
-		},
-	],
+	interests: [{ type: String, trim: true }],
 
-	cuacks: [
-		{
-			author: { type: String, trim: true },
-			content: { type: String, trim: true },
-			likes: [{ type: String }],
-			recuacks: [{ type: String }],
-			date: { type: Date, default: Date.now },
-			reports: { type: Number },
-			comments: [
-				{
-					author: { type: String, trim: true },
-					content: { type: String, trim: true },
-					likes: [{ type: String }],
-					recuacks: [{ type: String }],
-					date: { type: Date, default: Date.now },
-					reports: { type: Number },
-				},
-			],
-			category: { type: String },
-			isPublic: { type: Boolean, default: true },
-		},
-	],
+	cuacks: [{ type: String }],
 
 	notifications: [
 		{
