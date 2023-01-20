@@ -268,9 +268,6 @@ export const getCustomCuacks = async (req: Request, res: Response) => {
       .send({ reponse: false, msg: 'User not found, bad request' });
 
   let cuacksResponse: any = [];
-
-  console.log(user.following);
-
   for (const following of user.following) {
     cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following, 5));
   }
@@ -282,7 +279,17 @@ const getCuacksByUser = async (user: string, limit: number) => {
     const cuacks = await Cuack.find({ author: user })
       .sort({ creationDate: -1 })
       .limit(limit);
-    if (cuacks) return cuacks;
+    if (cuacks) {
+      const author = await User.findOne({ _id: user });
+      return cuacks.map((cuack) => {
+        return {
+          nickname: author?.nickname,
+          fullname: author?.fullname,
+          picture: author?.img,
+          ...cuack,
+        };
+      });
+    }
     return [];
   } catch (error) {
     console.log(`Internal server error in getCuacksByUser: ${error}`);
