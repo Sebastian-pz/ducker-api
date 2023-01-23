@@ -26,6 +26,7 @@ import {
   userRemoveSilenced,
   userRemoveBlocked,
   queryUsers,
+  bulkCreate,
 } from '../controllers';
 
 const router = express.Router();
@@ -62,6 +63,8 @@ router.post(
   ],
   userPost
 );
+
+router.post('/dev/bulkCreate', bulkCreate);
 
 router.put(
   '/:id',
