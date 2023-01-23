@@ -59,7 +59,7 @@ export const bulkCreate = async (req: Request, res: Response) => {
       const user = new User({
         fullname: users[i].fullname,
         email: users[i].email,
-        nickname: users[i].nickname,
+        nickname: `@${users[i].nickname}`,
         password: users[i].password,
         img: users[i].img,
       });
