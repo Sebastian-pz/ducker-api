@@ -1,5 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
+import { usersMailsAndNicknames } from '../controllers/user';
 import {
 	validateFields,
 	validateNickname,
@@ -119,6 +120,8 @@ router.put(
 	[validateJWT, check('id', 'Invalid ID').isMongoId(), check('id').custom(existUser)],
 	userRemoveBlocked
 );
+
+router.get('/all/mails', usersMailsAndNicknames);
 
 // Mati ama bad bunny
 
