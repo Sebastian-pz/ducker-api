@@ -52,6 +52,30 @@ export const userPost = async (req: Request, res: Response) => {
   });
 };
 
+export const bulkCreate = async (req: Request, res: Response) => {
+  const { users } = req.body;
+  try {
+    for (let i = 0; i < users.length; i++) {
+      const user = new User({
+        fullname: users[i].fullname,
+        email: users[i].email,
+        nickname: `@${users[i].nickname}`,
+        password: users[i].password,
+        img: users[i].img,
+      });
+
+      await user.save();
+    }
+
+    return res.status(201).send({ response: true, msg: 'Creado con éxito' });
+  } catch (error) {
+    console.log(`Internal server error ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, msg: 'Internal server error' });
+  }
+};
+
 export const userID = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
