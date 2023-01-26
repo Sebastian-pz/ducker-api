@@ -43,6 +43,12 @@ const userSchema = new Schema({
 			'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674141510/Ducker/user-silouette_x2jf70.png',
 	},
 
+	bannerImg: {
+		type: String,
+		default:
+			'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674757417/Ducker/ducker_ze61ce.png',
+	},
+
 	role: {
 		type: String,
 		required: true,
@@ -61,6 +67,11 @@ const userSchema = new Schema({
 	},
 
 	description: {
+		type: String,
+		required: false,
+	},
+
+	website: {
 		type: String,
 		required: false,
 	},
