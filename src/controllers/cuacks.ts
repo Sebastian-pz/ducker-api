@@ -171,7 +171,7 @@ export const getCustomCuacks = async (req: Request, res: Response) => {
 	for (const following of user.following) {
 		cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following, 5));
 	}
-	cuacksResponse = cuacksResponse.concat(user.cuacks.slice(0, 5));
+	cuacksResponse = cuacksResponse.concat(await getCuacksByUser(id, 5));
 
 	return res.status(200).send({ response: true, payload: cuacksResponse });
 };
