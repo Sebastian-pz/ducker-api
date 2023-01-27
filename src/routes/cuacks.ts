@@ -1,15 +1,15 @@
 import express from 'express';
 import {
-  cuackPost,
-  getAllCuacks,
-  deleteCuack,
-  addComment,
-  reCuack,
-  likeCuack,
-  removeLikeCuack,
-  removeReCuack,
-  removeComment,
-  getCustomCuacks,
+	cuackPost,
+	getAllCuacks,
+	deleteCuack,
+	addComment,
+	reCuack,
+	likeCuack,
+	removeLikeCuack,
+	removeReCuack,
+	removeComment,
+	getCustomCuacks,
 } from '../controllers';
 import { validateJWT } from '../middlewares';
 
@@ -21,13 +21,13 @@ router.post('/', [validateJWT], cuackPost);
 router.delete('/:id', [validateJWT], deleteCuack);
 
 // Agregando comentario - recuack - like
-router.post('/c/:id', addComment);
-router.post('/rc/:id', reCuack);
-router.post('/l/:id', likeCuack);
+router.post('/c/:id', [validateJWT], addComment);
+router.post('/rc/:id', [validateJWT], reCuack);
+router.post('/l/:id', [validateJWT], likeCuack);
 
 // Eliminando comentario - recuack - like
-router.delete('/c/:id', removeComment);
-router.delete('/rc/:id', removeReCuack);
-router.delete('/l/:id', removeLikeCuack);
+router.delete('/c/:id', [validateJWT], removeComment);
+router.delete('/rc/:id', [validateJWT], removeReCuack);
+router.delete('/l/:id', [validateJWT], removeLikeCuack);
 
 export default router;
