@@ -5,7 +5,8 @@ import Cuack from '../models/cuack';
 
 const acceptedCollections = ['users', 'cuacks'];
 
-const searchUsers = async (term = '', res: Response) => {
+const searchUsers = async (req: Request, term = '', res: Response) => {
+	const { since = 0, from = 10 } = req.query;
 	const isMongoID = ObjectId.isValid(term);
 
 	if (isMongoID) {
@@ -26,7 +27,9 @@ const searchUsers = async (term = '', res: Response) => {
 		User.find({
 			$or: [{ fullname: regex }, { nickname: regex }],
 			$and: [{ state: true }],
-		}),
+		})
+			.limit(Number(from))
+			.skip(Number(since)),
 	]);
 	return res.status(200).send({
 		results: total,
@@ -34,7 +37,8 @@ const searchUsers = async (term = '', res: Response) => {
 	});
 };
 
-const searchCuacks = async (term = '', res: Response) => {
+const searchCuacks = async (req: Request, term = '', res: Response) => {
+	const { since = 0, from = 10 } = req.query;
 	const isMongoID = ObjectId.isValid(term);
 
 	if (isMongoID) {
@@ -59,7 +63,10 @@ const searchCuacks = async (term = '', res: Response) => {
 		Cuack.find({
 			$or: [{ content: regex }, { category: regex }],
 			$and: [{ isPublic: true }],
-		}),
+		})
+			.limit(Number(from))
+			.skip(Number(since)),
+		,
 	]);
 	return res.status(200).send({
 		results: total,
@@ -78,10 +85,10 @@ export const search = (req: Request, res: Response) => {
 
 	switch (collection) {
 		case 'users':
-			return searchUsers(term, res);
+			return searchUsers(req, term, res);
 
 		case 'cuacks':
-			return searchCuacks(term, res);
+			return searchCuacks(req, term, res);
 
 		default:
 			return res.status(500).send({
