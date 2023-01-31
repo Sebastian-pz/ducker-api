@@ -56,21 +56,35 @@ const searchCuacks = async (req: Request, term = '', res: Response) => {
 
 	const [total, cuacks] = await Promise.all([
 		Cuack.countDocuments({
-			$or: [{ content: regex }, { category: regex }],
+			$or: [{ content: regex }],
 			$and: [{ isPublic: true }],
 		}),
 
 		Cuack.find({
-			$or: [{ content: regex }, { category: regex }],
+			$or: [{ content: regex }],
 			$and: [{ isPublic: true }],
 		})
 			.limit(Number(from))
 			.skip(Number(since)),
 		,
 	]);
+
+	const searchCuacks: any = [];
+	for (const cuack of cuacks) {
+		const author = await User.findOne({ _id: cuack.author });
+
+		searchCuacks.push({
+			nickname: author?.nickname,
+			fullname: author?.fullname,
+			picture: author?.img,
+			//@ts-ignore
+			_doc: cuack._doc,
+		});
+	}
+
 	return res.status(200).send({
 		results: total,
-		cuacks,
+		searchCuacks,
 	});
 };
 
