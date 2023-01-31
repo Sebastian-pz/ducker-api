@@ -10,12 +10,14 @@ import {
 	removeReCuack,
 	removeComment,
 	getCustomCuacks,
+	getCuacksByUserId,
 } from '../controllers';
 import { validateJWT } from '../middlewares';
 
 const router = express.Router();
 
 router.get('/', getAllCuacks);
+router.get('/u/:id', [validateJWT], getCuacksByUserId);
 router.get('/ccu/:id', getCustomCuacks);
 router.post('/', [validateJWT], cuackPost);
 router.put('/:id', [validateJWT], deleteCuack);

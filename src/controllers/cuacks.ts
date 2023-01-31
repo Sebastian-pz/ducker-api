@@ -176,7 +176,7 @@ export const getCustomCuacks = async (req: Request, res: Response) => {
 	return res.status(200).send({ response: true, payload: cuacksResponse });
 };
 
-const getCuacksByUser = async (user: string, limit: number) => {
+export const getCuacksByUser = async (user: string, limit: number) => {
 	try {
 		const cuacks = await Cuack.find({ author: user }).sort({ date: -1 }).limit(limit);
 		if (cuacks) {
@@ -186,7 +186,8 @@ const getCuacksByUser = async (user: string, limit: number) => {
 					nickname: author?.nickname,
 					fullname: author?.fullname,
 					picture: author?.img,
-					...cuack,
+					//@ts-ignore
+					_doc: cuack._doc,
 				};
 			});
 		}
@@ -195,4 +196,11 @@ const getCuacksByUser = async (user: string, limit: number) => {
 		console.log(`Internal server error in getCuacksByUser: ${error}`);
 		return [];
 	}
+};
+
+export const getCuacksByUserId = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	if (!id) return res.status(400).send({ response: false, msg: 'Miising data' });
+	const resp = await getCuacksByUser(id, 2);
+	return res.status(200).send({ response: true, payload: resp });
 };
