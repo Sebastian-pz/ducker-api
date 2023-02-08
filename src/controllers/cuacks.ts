@@ -307,3 +307,14 @@ export const getCuacksByUserId = async (req: Request, res: Response) => {
   const resp = await getCuacksByUser(id, 2);
   return res.status(200).send({ response: true, payload: resp });
 };
+
+export const getCuackByid = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const cuack = await Cuack.findOne({ _id: id });
+  if (!cuack)
+    return res
+      .status(400)
+      .send({ reponse: false, msg: 'Cuack not found, bad request' })
+
+  return res.status(200).send({ response: true, payload: cuack });
+};
