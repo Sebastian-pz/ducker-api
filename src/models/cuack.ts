@@ -18,6 +18,7 @@ const cuackSchema = new Schema({
 			recuacks: [{ type: String }],
 			date: { type: Date, default: Date.now },
 			reports: { type: String },
+			imgComment: { type: String },
 		},
 	],
 	category: { type: String, default: '@Test' },
