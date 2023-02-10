@@ -41,7 +41,7 @@ export const googleSignIn = async (req: Request, res: Response) => {
 	const { id_token } = req.body;
 
 	try {
-		const { email, fullname, img } = await googleVerify(id_token);
+		const { email, fullname } = await googleVerify(id_token);
 		let user = await User.findOne({ email });
 
 		if (!user) {
@@ -50,7 +50,6 @@ export const googleSignIn = async (req: Request, res: Response) => {
 				fullname,
 				email,
 				password: generatePass(fullname),
-				img,
 				google: true,
 				role: 'USER_ROLE',
 				nickname: generateNickname(fullname),
