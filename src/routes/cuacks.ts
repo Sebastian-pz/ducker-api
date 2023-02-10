@@ -1,17 +1,18 @@
 import express from 'express';
 import {
-	cuackPost,
-	getAllCuacks,
-	deleteCuack,
-	addComment,
-	reCuack,
-	likeCuack,
-	removeLikeCuack,
-	removeReCuack,
-	removeComment,
-	getCustomCuacks,
-	getCuacksByUserId,
-	getCuackByid,
+  cuackPost,
+  getAllCuacks,
+  deleteCuack,
+  addComment,
+  reCuack,
+  likeCuack,
+  removeLikeCuack,
+  removeReCuack,
+  removeComment,
+  getCustomCuacks,
+  getCuacksByUserId,
+  getCuackByid,
+  getComments,
 } from '../controllers';
 import { validateJWT } from '../middlewares';
 
@@ -28,6 +29,9 @@ router.put('/:id', [validateJWT], deleteCuack);
 router.post('/c/:id', [validateJWT], addComment);
 router.post('/rc/:id', [validateJWT], reCuack);
 router.post('/l/:id', [validateJWT], likeCuack);
+
+// Obtener comentarios de un post
+router.get('/c/:previous', [validateJWT], getComments);
 
 // Eliminando comentario - recuack - like
 router.put('/c/:id', [validateJWT], removeComment);
