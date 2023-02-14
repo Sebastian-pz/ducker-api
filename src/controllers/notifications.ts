@@ -16,12 +16,12 @@ export async function addNotification(user: string, content: object) {
   }
 }
 
-export async function notificateMentions(cuack: any): Promise<void> {
+export async function notificateMentions(user: any, cuack: any): Promise<void> {
   const mentions = getMentions(cuack.content);
   if (mentions?.length) {
     for (const mention of mentions) {
       await addNotification(mention, {
-        content: `Te mencionaron en la publicación ${cuack._id}`,
+        content: `${user.nickname} te ha mencionado en la publicación ${cuack._id}`,
       });
     }
   }

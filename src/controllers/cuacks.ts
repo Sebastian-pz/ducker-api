@@ -17,11 +17,11 @@ export const cuackPost = async (req: Request, res: Response) => {
 
   try {
     const newCuack = await Cuack.create(cuack);
-    await User.updateOne(
+    const user = await User.findOneAndUpdate(
       { _id: cuack.author },
       { $push: { cuacks: newCuack.id } }
     );
-    await notificateMentions(newCuack);
+    await notificateMentions(user, newCuack);
     return res.status(201).send({ response: true, payload: newCuack });
   } catch (error) {
     console.log(`Error CuackPost, Internal server error: ${error}`);
@@ -100,9 +100,9 @@ export const addComment = async (req: Request, res: Response) => {
       { id: comment.author },
       { $push: { cuacks: newComment.id } }
     );
-    await notificateMentions(newComment);
+    await notificateMentions(user, newComment);
     await addNotification(comment.author, {
-      content: `${user?.fullname} ha comentado tu publicación ${id}`,
+      content: `${user?.nickname} ha comentado tu publicación ${id}`,
     });
     return res.status(201).send({ response: true, payload: newComment });
   } catch (error) {
@@ -199,7 +199,7 @@ export const reCuack = async (req: Request, res: Response) => {
       { $push: { recuacks: update.id } }
     );
     await addNotification(update.author, {
-      content: `${userUpdate?.fullname} ha comentado tu publicación ${id}`,
+      content: `${userUpdate?.nickname} ha comentado tu publicación ${id}`,
     });
     return res
       .status(200)
@@ -267,7 +267,7 @@ export const likeCuack = async (req: Request, res: Response) => {
     );
 
     await addNotification(update.author, {
-      content: `A ${modUser?.fullname} le ha gustado tu publicación ${id}`,
+      content: `A ${modUser?.nickname} le ha gustado tu publicación ${id}`,
     });
 
     return res
