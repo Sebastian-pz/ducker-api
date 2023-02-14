@@ -1,6 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { usersMailsAndNicknames } from '../controllers/user';
+import { delNot, usersMailsAndNicknames } from '../controllers/user';
 import {
   validateFields,
   validateNickname,
@@ -27,6 +27,7 @@ import {
   userRemoveBlocked,
   queryUsers,
   bulkCreate,
+  readNot,
 } from '../controllers';
 
 const router = express.Router();
@@ -159,6 +160,10 @@ router.put(
   ],
   userRemoveBlocked
 );
+
+// Notificaciones
+router.put('/n/:id', readNot);
+router.delete('/n/:id', delNot);
 
 router.get('/all/mails', usersMailsAndNicknames);
 

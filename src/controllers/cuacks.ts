@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import User from '../models/user';
 import { noSpecialCharactersContent } from '../middlewares/utils/fields';
 import Cuack from '../models/cuack';
+import { addNotification, notificateMentions } from './notifications';
 
 export const cuackPost = async (req: Request, res: Response) => {
   const { cuack } = req.body;
-
   if (!cuack)
     return res.status(400).send({ response: false, msg: 'Missing info' });
 
@@ -21,6 +21,7 @@ export const cuackPost = async (req: Request, res: Response) => {
       { _id: cuack.author },
       { $push: { cuacks: newCuack.id } }
     );
+    await notificateMentions(newCuack);
     return res.status(201).send({ response: true, payload: newCuack });
   } catch (error) {
     console.log(`Error CuackPost, Internal server error: ${error}`);
@@ -32,7 +33,7 @@ export const cuackPost = async (req: Request, res: Response) => {
 
 export const getAllCuacks = async (_req: Request, res: Response) => {
   try {
-    const cuacks = await Cuack.find();
+    const cuacks = await Cuack.find().limit(1000).exec();
     return res.status(200).send({
       total: cuacks.length,
       cuacks,
@@ -95,10 +96,14 @@ export const addComment = async (req: Request, res: Response) => {
     );
     if (!cuack)
       return res.status(400).send({ response: false, payload: 'Invalid ID' });
-    await User.updateOne(
+    const user = await User.findOneAndUpdate(
       { id: comment.author },
       { $push: { cuacks: newComment.id } }
     );
+    await notificateMentions(newComment);
+    await addNotification(comment.author, {
+      content: `${user?.fullname} ha comentado tu publicación ${id}`,
+    });
     return res.status(201).send({ response: true, payload: newComment });
   } catch (error) {
     console.log(`Error adding comment, Internal server error: ${error}`);
@@ -189,8 +194,13 @@ export const reCuack = async (req: Request, res: Response) => {
         .status(400)
         .send({ response: false, payload: 'failed to update' });
 
-    await User.updateOne({ _id: user }, { $push: { recuacks: update.id } });
-
+    const userUpdate = await User.findOneAndUpdate(
+      { _id: user },
+      { $push: { recuacks: update.id } }
+    );
+    await addNotification(update.author, {
+      content: `${userUpdate?.fullname} ha comentado tu publicación ${id}`,
+    });
     return res
       .status(200)
       .send({ response: true, payload: 'successfully updated' });
@@ -251,7 +261,15 @@ export const likeCuack = async (req: Request, res: Response) => {
         .status(400)
         .send({ response: false, payload: 'failed to update' });
 
-    await User.updateOne({ _id: user }, { $push: { likes: update.id } });
+    const modUser = await User.findOneAndUpdate(
+      { _id: user },
+      { $push: { likes: update.id } }
+    );
+
+    await addNotification(update.author, {
+      content: `A ${modUser?.fullname} le ha gustado tu publicación ${id}`,
+    });
+
     return res
       .status(200)
       .send({ response: true, payload: 'successfully updated' });
