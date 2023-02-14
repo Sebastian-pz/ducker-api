@@ -194,8 +194,13 @@ export const reCuack = async (req: Request, res: Response) => {
         .status(400)
         .send({ response: false, payload: 'failed to update' });
 
-    await User.updateOne({ _id: user }, { $push: { recuacks: update.id } });
-
+    const userUpdate = await User.findOneAndUpdate(
+      { _id: user },
+      { $push: { recuacks: update.id } }
+    );
+    await addNotification(update.author, {
+      content: `${userUpdate?.fullname} ha comentado tu publicación ${id}`,
+    });
     return res
       .status(200)
       .send({ response: true, payload: 'successfully updated' });
