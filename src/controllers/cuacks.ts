@@ -304,7 +304,7 @@ export const getCuacksByUser = async (user: string, limit: number) => {
 export const getCuacksByUserId = async (req: Request, res: Response) => {
 	const { id } = req.params;
 	if (!id) return res.status(400).send({ response: false, msg: 'Miising data' });
-	const resp = await getCuacksByUser(id, 2);
+	const resp = await getCuacksByUser(id, 10);
 	return res.status(200).send({ response: true, payload: resp });
 };
 
