@@ -249,3 +249,71 @@ export const queryUsers = async (req: Request, res: Response) => {
     return res.status(500).send('Internal server error');
   }
 };
+
+/* ************* Notificaciones ************* */
+
+// Get notificaiones del usuario
+/*
+  Se utiliza la query para obtener la información del usuario
+*/
+
+// Marcar como vistas las notificaciones
+export const readNot = async (req: Request, res: Response) => {
+  // Se necesita el id del usuario para modificar su array de notificaciones
+  const { id } = req.params;
+
+  // Se abre un try catch para hacer las querys a la base de datos
+  try {
+    // Query principal
+    const modResponse = await User.updateOne(
+      { _id: id },
+      { $set: { 'notifications.$[].new': false } }
+    );
+    // Si se modificó con exito, entonces response con un 202
+    if (modResponse.modifiedCount == 1)
+      return res
+        .status(202)
+        .send({ response: true, payload: 'Updated successfully' });
+
+    // Si no se modificó ningún usuario, entonces retorna un 400,
+    // haciendo referencia a que el usuario no existe
+    return res
+      .status(400)
+      .send({ response: false, payload: 'Invalid provided info' });
+  } catch (error) {
+    console.log(`Internal server error in ReadNot ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
+};
+// Eliminar notificaciones
+export const delNot = async (req: Request, res: Response) => {
+  // Se necesita el id del usuario para modificar su array de notificaciones
+  const { id } = req.params;
+
+  // Se abre un try catch para hacer las querys a la base de datos
+  try {
+    // Query principal
+    const modResponse = await User.updateOne(
+      { _id: id },
+      { $set: { notifications: [] } }
+    );
+    // Si se modificó con exito, entonces response con un 202
+    if (modResponse.modifiedCount == 1)
+      return res
+        .status(202)
+        .send({ response: true, payload: 'Updated successfully' });
+
+    // Si no se modificó ningún usuario, entonces retorna un 400,
+    // haciendo referencia a que el usuario no existe
+    return res
+      .status(400)
+      .send({ response: false, payload: 'Invalid provided info' });
+  } catch (error) {
+    console.log(`Internal server error in delNot ${error}`);
+    return res
+      .status(500)
+      .send({ response: false, payload: 'Internal server error' });
+  }
+};
