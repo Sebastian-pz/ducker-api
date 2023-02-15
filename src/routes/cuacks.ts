@@ -1,18 +1,18 @@
 import express from 'express';
 import {
-  cuackPost,
-  getAllCuacks,
-  deleteCuack,
-  addComment,
-  reCuack,
-  likeCuack,
-  removeLikeCuack,
-  removeReCuack,
-  removeComment,
-  getCustomCuacks,
-  getCuacksByUserId,
-  getCuackByid,
-  getComments,
+	cuackPost,
+	getAllCuacks,
+	deleteCuack,
+	addComment,
+	reCuack,
+	likeCuack,
+	removeLikeCuack,
+	removeReCuack,
+	removeComment,
+	getCustomCuacks,
+	getCuacksByUserId,
+	getCuackByid,
+	getComments,
 } from '../controllers';
 import { validateJWT } from '../middlewares';
 
