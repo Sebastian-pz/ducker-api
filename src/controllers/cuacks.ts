@@ -47,29 +47,18 @@ export const getAllCuacks = async (_req: Request, res: Response) => {
 };
 
 export const deleteCuack = async (req: Request, res: Response) => {
-  const { id } = req.params;
+	const { id } = req.params;
 
-  if (!id)
-    return res.status(400).send({ response: false, payload: 'Missing data' });
+	if (!id) return res.status(400).send({ response: false, payload: 'Missing data' });
 
-  try {
-    const update = await Cuack.findOneAndUpdate(
-      { id },
-      { $set: { isPublic: false } }
-    );
-    if (!update)
-      return res
-        .status(400)
-        .send({ response: false, payload: 'failed to update' });
-    return res
-      .status(200)
-      .send({ response: true, payload: 'successfully updated' });
-  } catch (error) {
-    console.log(`Error 'deleting' cuack', Internal server error: ${error}`);
-    return res
-      .status(500)
-      .send({ response: false, payload: 'Internal server error' });
-  }
+	try {
+		const update = await Cuack.findOneAndUpdate({ _id: id }, { $set: { isPublic: false } });
+		if (!update) return res.status(400).send({ response: false, payload: 'failed to update' });
+		return res.status(200).send({ response: true, payload: 'successfully updated' });
+	} catch (error) {
+		console.log(`Error 'deleting' cuack', Internal server error: ${error}`);
+		return res.status(500).send({ response: false, payload: 'Internal server error' });
+	}
 };
 
 export const addComment = async (req: Request, res: Response) => {
@@ -114,32 +103,28 @@ export const addComment = async (req: Request, res: Response) => {
 };
 
 export const getComments = async (req: Request, res: Response) => {
-  const { previous } = req.params;
-  if (!previous)
-    return res
-      .status(400)
-      .send({ response: false, payload: 'Invalid or missing data' });
-  try {
-    const comments = await Cuack.find({ previous });
-    let response = [];
-    for (const comment of comments) {
-      // @ts-ignore
-      const { nickname, fullname, img, id } = await User.findOne({
-        _id: comment.author,
-      });
-      response.push({ nickname, fullname, img, userid: id, _doc: comment });
-    }
-    return res.status(200).send(response);
-  } catch (error) {
-    console.log(`Internal server error on GetComments ${error}`);
-    return res
-      .status(500)
-      .send({ response: false, payload: 'Internal server error' });
-  }
+	const { previous } = req.params;
+	if (!previous)
+		return res.status(400).send({ response: false, payload: 'Invalid or missing data' });
+	try {
+		const comments = await Cuack.find({ previous });
+		let response = [];
+		for (const comment of comments) {
+			// @ts-ignore
+			const { nickname, fullname, img, id } = await User.findOne({
+				_id: comment.author,
+			});
+			response.push({ nickname, fullname, img, userid: id, _doc: comment });
+		}
+		return res.status(200).send(response);
+	} catch (error) {
+		console.log(`Internal server error on GetComments ${error}`);
+		return res.status(500).send({ response: false, payload: 'Internal server error' });
+	}
 };
 
 export const removeComment = async (req: Request, res: Response) => {
-  /*
+	/*
 		Necesitamos 3 cosas
 			-> El id del comentario
 			-> El id del Cuack original
@@ -147,34 +132,25 @@ export const removeComment = async (req: Request, res: Response) => {
 
 			Los tres los encontramos dentro del comentario (id, previous, author)
 	*/
-  const { id } = req.params;
+	const { id } = req.params;
 
-  const comment = await Cuack.findOne({ _id: id, type: 'comment' });
+	const comment = await Cuack.findOne({ _id: id, type: 'comment' });
 
-  if (!comment)
-    return res.status(400).send({ response: false, payload: 'Invalid id' });
+	if (!comment) return res.status(400).send({ response: false, payload: 'Invalid id' });
 
-  try {
-    // Se elimina la referencia en el cuack anterior
-    await Cuack.updateOne(
-      { _id: comment.previous },
-      { $pull: { comments: comment.id } }
-    );
-    // Se elimina el cuack del usuario
-    await User.updateOne(
-      { _id: comment.author },
-      { $pull: { cuacks: comment.id } }
-    );
-    // Se borra el comentario
-    await Cuack.deleteOne({ _id: comment.id });
+	try {
+		// Se elimina la referencia en el cuack anterior
+		await Cuack.updateOne({ _id: comment.previous }, { $pull: { comments: comment.id } });
+		// Se elimina el cuack del usuario
+		await User.updateOne({ _id: comment.author }, { $pull: { cuacks: comment.id } });
+		// Se borra el comentario
+		await Cuack.deleteOne({ _id: comment.id });
 
-    return res.status(200).send({ response: true, payload: 'Success' });
-  } catch (error) {
-    console.log(`Error adding comment, Internal server error: ${error}`);
-    return res
-      .status(500)
-      .send({ response: false, payload: 'Internal server error' });
-  }
+		return res.status(200).send({ response: true, payload: 'Success' });
+	} catch (error) {
+		console.log(`Error adding comment, Internal server error: ${error}`);
+		return res.status(500).send({ response: false, payload: 'Internal server error' });
+	}
 };
 
 export const reCuack = async (req: Request, res: Response) => {
@@ -213,35 +189,22 @@ export const reCuack = async (req: Request, res: Response) => {
 };
 
 export const removeReCuack = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { user } = req.body;
+	const { id } = req.params;
+	const { user } = req.body;
 
-  if (!id || !user)
-    return res.status(400).send({ response: false, payload: 'Missing data' });
+	if (!id || !user) return res.status(400).send({ response: false, payload: 'Missing data' });
 
-  try {
-    const update = await Cuack.findOneAndUpdate(
-      { id },
-      { $pull: { recuacks: user } }
-    );
-    if (!update)
-      return res
-        .status(400)
-        .send({ response: false, payload: 'failed to update' });
+	try {
+		const update = await Cuack.findOneAndUpdate({ id }, { $pull: { recuacks: user } });
+		if (!update) return res.status(400).send({ response: false, payload: 'failed to update' });
 
-    await User.updateOne({ id: user }, { $pull: { recuacks: update.id } });
+		await User.updateOne({ id: user }, { $pull: { recuacks: update.id } });
 
-    return res
-      .status(200)
-      .send({ response: true, payload: 'successfully updated' });
-  } catch (error) {
-    console.log(
-      `Error in remove recuack function, Internal server error: ${error}`
-    );
-    return res
-      .status(500)
-      .send({ response: false, payload: 'Internal server error' });
-  }
+		return res.status(200).send({ response: true, payload: 'successfully updated' });
+	} catch (error) {
+		console.log(`Error in remove recuack function, Internal server error: ${error}`);
+		return res.status(500).send({ response: false, payload: 'Internal server error' });
+	}
 };
 
 export const likeCuack = async (req: Request, res: Response) => {
@@ -282,103 +245,83 @@ export const likeCuack = async (req: Request, res: Response) => {
 };
 
 export const removeLikeCuack = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { user } = req.body;
+	const { id } = req.params;
+	const { user } = req.body;
 
-  if (!id || !user)
-    return res.status(400).send({ response: false, payload: 'Missing data' });
+	if (!id || !user) return res.status(400).send({ response: false, payload: 'Missing data' });
 
-  try {
-    const update = await Cuack.findOneAndUpdate(
-      { _id: id },
-      { $pull: { likes: user } }
-    );
-    if (!update)
-      return res
-        .status(400)
-        .send({ response: false, payload: 'failed to update' });
+	try {
+		const update = await Cuack.findOneAndUpdate({ _id: id }, { $pull: { likes: user } });
+		if (!update) return res.status(400).send({ response: false, payload: 'failed to update' });
 
-    await User.updateOne({ _id: user }, { $pull: { likes: update.id } });
+		await User.updateOne({ _id: user }, { $pull: { likes: update.id } });
 
-    return res
-      .status(200)
-      .send({ response: true, payload: 'successfully updated' });
-  } catch (error) {
-    console.log(
-      `Error in remove like function, Internal server error: ${error}`
-    );
-    return res
-      .status(500)
-      .send({ response: false, payload: 'Internal server error' });
-  }
+		return res.status(200).send({ response: true, payload: 'successfully updated' });
+	} catch (error) {
+		console.log(`Error in remove like function, Internal server error: ${error}`);
+		return res.status(500).send({ response: false, payload: 'Internal server error' });
+	}
 };
 
 export const getCustomCuacks = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const user = await User.findOne({ _id: id, type: 'cuack' });
-  if (!user)
-    return res
-      .status(400)
-      .send({ reponse: false, msg: 'User not found, bad request' });
+	const { id } = req.params;
+	const user = await User.findOne({ _id: id, type: 'cuack' });
+	if (!user) return res.status(400).send({ reponse: false, msg: 'User not found, bad request' });
 
-  let cuacksResponse: any = [];
-  for (const following of user.following) {
-    cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following, 5));
-  }
-  cuacksResponse = cuacksResponse.concat(await getCuacksByUser(id, 5));
+	let cuacksResponse: any = [];
+	for (const following of user.following) {
+		cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following, 5));
+	}
+	cuacksResponse = cuacksResponse.concat(await getCuacksByUser(id, 5));
 
-  return res.status(200).send({ response: true, payload: cuacksResponse });
+	return res.status(200).send({ response: true, payload: cuacksResponse });
 };
 
 export const getCuacksByUser = async (user: string, limit: number) => {
-  try {
-    const cuacks = await Cuack.find({ author: user, type: 'cuack' })
-      .sort({ date: -1 })
-      .limit(limit);
-    if (cuacks) {
-      const author = await User.findOne({ _id: user });
-      return cuacks.map((cuack) => {
-        return {
-          nickname: author?.nickname,
-          fullname: author?.fullname,
-          picture: author?.img,
-          //@ts-ignore
-          _doc: cuack._doc,
-        };
-      });
-    }
-    return [];
-  } catch (error) {
-    console.log(`Internal server error in getCuacksByUser: ${error}`);
-    return [];
-  }
+	try {
+		const cuacks = await Cuack.find({ author: user, type: 'cuack', isPublic: true })
+			.sort({ date: -1 })
+			.limit(limit);
+		if (cuacks) {
+			const author = await User.findOne({ _id: user });
+			return cuacks.map((cuack) => {
+				return {
+					nickname: author?.nickname,
+					fullname: author?.fullname,
+					picture: author?.img,
+					//@ts-ignore
+					_doc: cuack._doc,
+				};
+			});
+		}
+		return [];
+	} catch (error) {
+		console.log(`Internal server error in getCuacksByUser: ${error}`);
+		return [];
+	}
 };
 
 export const getCuacksByUserId = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id)
-    return res.status(400).send({ response: false, msg: 'Miising data' });
-  const resp = await getCuacksByUser(id, 2);
-  return res.status(200).send({ response: true, payload: resp });
+	const { id } = req.params;
+	if (!id) return res.status(400).send({ response: false, msg: 'Miising data' });
+	const resp = await getCuacksByUser(id, 2);
+	return res.status(200).send({ response: true, payload: resp });
 };
 
 export const getCuackByid = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const cuack = await Cuack.findOne({ _id: id });
-  if (!cuack)
-    return res
-      .status(400)
-      .send({ reponse: false, msg: 'Cuack not found, bad request' });
-  const author = await User.findOne({ _id: cuack.author });
+	const { id } = req.params;
+	const cuack = await Cuack.findOne({ _id: id });
+	if (!cuack) return res.status(400).send({ reponse: false, msg: 'Cuack not found, bad request' });
+	const author = await User.findOne({ _id: cuack.author });
 
-  return res.status(200).send({
-    response: true,
-    payload: {
-      nickname: author?.nickname,
-      fullname: author?.fullname,
-      picture: author?.img,
-      //@ts-ignore
-      _doc: cuack,
-    },
-  });
+	return res.status(200).send({
+		response: true,
+		payload: {
+			nickname: author?.nickname,
+			fullname: author?.fullname,
+			picture: author?.img,
+			//@ts-ignore
+			_doc: cuack,
+		},
+	});
 };
