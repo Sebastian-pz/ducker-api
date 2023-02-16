@@ -265,25 +265,35 @@ export const removeLikeCuack = async (req: Request, res: Response) => {
 
 export const getCustomCuacks = async (req: Request, res: Response) => {
 	const { id } = req.params;
-	const { since = 0 } = req.query;
+	const { limit = 0 } = req.query;
 	const user = await User.findOne({ _id: id, type: 'cuack' });
 	if (!user) return res.status(400).send({ reponse: false, msg: 'User not found, bad request' });
 
 	let cuacksResponse: any = [];
 	for (const following of user.following) {
-		cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following, 5, Number(since)));
+		cuacksResponse = cuacksResponse.concat(await getCuacksByUser(following));
 	}
-	cuacksResponse = cuacksResponse.concat(await getCuacksByUser(id, 5, Number(since)));
+	cuacksResponse = cuacksResponse.concat(await getCuacksByUser(id));
 
-	return res.status(200).send({ response: true, payload: cuacksResponse });
+	const cuacksSorted = [...cuacksResponse];
+	if (cuacksResponse.length) {
+		if (cuacksResponse[0]._doc) {
+			if (cuacksResponse[0]._doc.date) {
+				//@ts-ignore
+				cuacksSorted.sort((a, b) => new Date(b._doc.date) - new Date(a._doc.date));
+			}
+		}
+	}
+
+	return res.status(200).send({ response: true, payload: cuacksSorted.slice(0, Number(limit)) });
 };
 
-export const getCuacksByUser = async (user: string, limit: number, skip: number) => {
+export const getCuacksByUser = async (user: string) => {
 	try {
 		const cuacks = await Cuack.find({ author: user, type: 'cuack', isPublic: true })
 			.sort({ date: -1 })
-			.limit(Number(limit))
-			.skip(Number(skip));
+			.limit(45);
+
 		if (cuacks) {
 			const author = await User.findOne({ _id: user });
 			return cuacks.map((cuack) => {
@@ -306,7 +316,7 @@ export const getCuacksByUser = async (user: string, limit: number, skip: number)
 export const getCuacksByUserId = async (req: Request, res: Response) => {
 	const { id } = req.params;
 	if (!id) return res.status(400).send({ response: false, msg: 'Miising data' });
-	const resp = await getCuacksByUser(id, 10, 0);
+	const resp = await getCuacksByUser(id);
 	return res.status(200).send({ response: true, payload: resp });
 };
 
