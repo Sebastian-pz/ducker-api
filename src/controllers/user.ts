@@ -12,6 +12,7 @@ import {
   removeSilenced,
   removeBlocked,
 } from './utils';
+import { addNotification } from './notifications';
 
 export const usersGet = async (req: Request, res: Response) => {
   const { since = 0, from = 10 } = req.query;
@@ -112,6 +113,9 @@ export const usersPut = async (req: Request, res: Response) => {
 
   try {
     const user = await User.findByIdAndUpdate(id, rest, { new: true });
+    await addNotification(user?.id, {
+      content: 'Tu perfil se ha actualizado con éxito.',
+    });
     return res.status(202).send({ msg: 'User updated!', user });
   } catch (error) {
     console.log(`usersPut internal error: ${error}`);
@@ -145,6 +149,10 @@ export const userFollowing = async (req: Request, res: Response) => {
     addFollowing(idUserOne, idUserTwo),
     addFollower(idUserTwo, idUserOne),
   ]);
+
+  await addNotification(idUserTwo, {
+    content: `${follower.nickname} ha comenzado a seguirte.`,
+  });
 
   if (following && follower)
     return res
