@@ -1,128 +1,136 @@
 import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema({
-  fullname: {
-    type: String,
-    required: [true, 'The name is required'],
-  },
+	fullname: {
+		type: String,
+		required: [true, 'The name is required'],
+	},
 
-  nickname: {
-    type: String,
-    required: true,
-  },
+	nickname: {
+		type: String,
+		required: true,
+	},
 
-  location: {
-    type: String,
-    required: false,
-  },
+	location: {
+		type: String,
+		required: false,
+	},
 
-  email: {
-    type: String,
-    required: [true, 'The email is required'],
-    unique: true,
-  },
+	email: {
+		type: String,
+		required: [true, 'The email is required'],
+		unique: true,
+	},
 
-  confirmedEmail: {
-    type: Boolean,
-    default: false,
-  },
+	confirmedEmail: {
+		type: Boolean,
+		default: false,
+	},
 
-  verifiedUser: {
-    type: Boolean,
-    default: false,
-  },
+	verifiedUser: {
+		type: Boolean,
+		default: false,
+	},
 
-  password: {
-    type: String,
-    required: [true, 'The password is required'],
-  },
+	password: {
+		type: String,
+		required: [true, 'The password is required'],
+	},
 
-  img: {
-    type: String,
-    default:
-      'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674141510/Ducker/user-silouette_x2jf70.png',
-  },
+	img: {
+		type: String,
+		default:
+			'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674141510/Ducker/user-silouette_x2jf70.png',
+	},
 
-  banner: {
-    type: String,
-    default:
-      'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674757417/Ducker/ducker_ze61ce.png',
-  },
+	banner: {
+		type: String,
+		default:
+			'https://res.cloudinary.com/dak9qk0lc/image/upload/v1674757417/Ducker/ducker_ze61ce.png',
+	},
 
-  role: {
-    type: String,
-    required: true,
-    enum: ['ADMIN_ROLE', 'USER_ROLE'],
-    default: 'USER_ROLE',
-  },
+	role: {
+		type: String,
+		required: true,
+		enum: ['ADMIN_ROLE', 'USER_ROLE'],
+		default: 'USER_ROLE',
+	},
 
-  state: {
-    type: Boolean,
-    default: true,
-  },
+	state: {
+		type: Boolean,
+		default: true,
+	},
 
-  google: {
-    type: Boolean,
-    default: false,
-  },
+	google: {
+		type: Boolean,
+		default: false,
+	},
 
-  description: {
-    type: String,
-    required: false,
-  },
+	description: {
+		type: String,
+		required: false,
+	},
 
-  website: {
-    type: String,
-    required: false,
-  },
+	website: {
+		type: String,
+		required: false,
+	},
 
-  creationDate: {
-    type: Date,
-    default: Date.now,
-  },
+	creationDate: {
+		type: Date,
+		default: Date.now,
+	},
 
-  birthday: {
-    type: Date,
-    required: false,
-  },
+	birthday: {
+		type: Date,
+		required: false,
+	},
 
-  likes: [{ type: String, trim: true }],
+	likes: [{ type: String, trim: true }],
 
-  recuacks: [{ type: String }],
+	recuacks: [{ type: String }],
 
-  following: [{ type: String, trim: true }],
+	following: [{ type: String, trim: true }],
 
-  followers: [{ type: String, trim: true }],
+	followers: [{ type: String, trim: true }],
 
-  silenced: [{ type: String, trim: true }],
+	silenced: [{ type: String, trim: true }],
 
-  blocked: [{ type: String, trim: true }],
+	blocked: [{ type: String, trim: true }],
 
-  interests: [{ type: String, trim: true }],
+	interests: [{ type: String, trim: true }],
 
-  cuacks: [{ type: String }],
+	cuacks: [{ type: String }],
 
-  notifications: [
-    {
-      new: { type: Boolean, default: true },
-      content: { type: String, default: '' },
-      img: { type: String, required: false },
-    },
-  ],
+	notifications: [
+		{
+			new: { type: Boolean, default: true },
+			content: { type: String, default: '' },
+			img: { type: String, required: false },
+		},
+	],
 
-  responses: [
-    {
-      originalID: { type: String, required: true },
-      commentID: { type: String, required: true },
-    },
-  ],
+	responses: [
+		{
+			originalID: { type: String, required: true },
+			commentID: { type: String, required: true },
+		},
+	],
+	reports: [
+		{
+			user: { type: String, trim: true },
+			date: { type: Date, default: Date.now },
+			reason: { type: String, trim: true },
+			cuackReportId: { type: String, trim: true },
+		},
+	],
 });
 
 userSchema.methods.toJSON = function () {
-  const { __v, password, _id, ...user } = this.toObject();
-  user.id = _id;
+	const { __v, password, _id, ...user } = this.toObject();
+	user.id = _id;
 
-  return user;
+	return user;
 };
 
 export default model('User', userSchema);
