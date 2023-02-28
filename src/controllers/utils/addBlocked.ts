@@ -7,7 +7,7 @@ import User from '../../models/user';
  */
 export const addBlocked = async (idUser: string, idOtherUser: any): Promise<boolean> => {
 	try {
-		const mod = await User.updateOne({ id: idUser }, { $push: { blocked: idOtherUser } });
+		const mod = await User.updateOne({ _id: idUser }, { $push: { blocked: idOtherUser } });
 		return mod.modifiedCount == 1 ? true : false;
 	} catch (error) {
 		console.log(`AddBlocked Internal server error: ${error}`);

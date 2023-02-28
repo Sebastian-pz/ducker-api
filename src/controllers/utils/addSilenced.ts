@@ -7,7 +7,7 @@ import User from '../../models/user';
  */
 export const addSilenced = async (idUser: string, idSilenced: any): Promise<boolean> => {
 	try {
-		const mod = await User.updateOne({ id: idUser }, { $push: { silenced: idSilenced } });
+		const mod = await User.updateOne({ _id: idUser }, { $push: { silenced: idSilenced } });
 		return mod.modifiedCount == 1 ? true : false;
 	} catch (error) {
 		console.log(`addSilenced Internal server error: ${error}`);
